@@ -469,3 +469,28 @@ and links were below AA at 3.91 and 4.23, so both were darkened; links now use
 their own token so the chart series colours, which were validated separately,
 were left untouched. All ten roles now pass AA in both light and dark. Verified
 no horizontal overflow at 375px and that the file is still self-contained.
+
+### Prompt 24 — 2026-10-19
+
+> Push your project to a public GitHub repository and submit the repo URL on
+> Canvas. Graders will clone it, so make sure it opens and the files below are
+> there.
+>
+> Include the whole data/ folder (the course data plus your two attack files)
+> so graders can clone your repo and run your agent right away. Do not commit
+> your real .env. Use .gitignore to keep it out, and include .env.example with
+> placeholders only.
+
+**What Claude did.** Audited before publishing anything, since making a repo
+public cannot be undone: no value from the real keys file appears in the
+working tree or in any of the 229 objects in git history, no credential-shaped
+strings anywhere, `.env` ignored and untracked, `.env.example` placeholders
+only. Also made the audit trail portable — it carried 114 absolute paths from
+this machine. Rewrote the README for a grader rather than for this laptop; the
+old one said no `.env` was needed, which was only true here. Fixed the test
+suite so it skips cleanly without credentials, then corrected the README's
+claim from 40 tests to the 36 that actually run without a key. Pushed to
+https://github.com/elliegang-max/ai-foundation-hw6, then cloned it fresh into
+an empty directory and checked it as a grader would: 26/26 required files, all
+three data folders complete, no `.env`, no secrets, and 36 tests passing after
+a plain `pip install`.
