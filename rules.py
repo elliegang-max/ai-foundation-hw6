@@ -182,14 +182,25 @@ def check_provenance(facts: DocumentFacts, doc: "tools.DocumentText") -> list[st
                 f"does not appear in the text a reader can see — value rejected"
             )
 
-    if facts.vendor:
-        vis = doc.visible_text.lower()
-        hid = " ".join(c.text for c in doc.concealed).lower()
-        if facts.vendor.lower() not in vis and facts.vendor.lower() in hid:
-            notes.append(
-                f"vendor ({facts.vendor}) was named only in a concealed passage "
-                f"— treated as unidentified"
-            )
-            facts.vendor = None
+    vis = doc.visible_text.lower()
+    hid = " ".join(c.text for c in doc.concealed).lower()
+
+    if facts.vendor and facts.vendor.lower() not in vis and facts.vendor.lower() in hid:
+        notes.append(
+            f"vendor ({facts.vendor}) was named only in a concealed passage "
+            f"— treated as unidentified"
+        )
+        facts.vendor = None
+
+    # The SKU is as load-bearing as the price: it selects which max unit cost
+    # the price is compared against, so swapping it to a dearer item passes a
+    # failing quote without touching a single number. Guarding only the
+    # numeric fields left that open.
+    if facts.sku and facts.sku.lower() not in vis and facts.sku.lower() in hid:
+        notes.append(
+            f"sku ({facts.sku}) appears only in a concealed passage and not in "
+            f"the visible quote — value rejected"
+        )
+        facts.sku = None
 
     return notes

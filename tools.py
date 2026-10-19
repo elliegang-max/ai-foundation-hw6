@@ -87,6 +87,22 @@ def _hidden_by(style: str) -> str | None:
             return f"font-size:{m.group(1)}{m.group(2) or ''}"
     if re.search(r"opacity:0(?:\.0+)?(?![\d.])", s):
         return "opacity:0"
+    # Pushed off the canvas. The classic screen-reader-only idiom, and the
+    # classic way to put text in front of a parser and not a person: the
+    # element renders normally, just nowhere anyone can look.
+    if re.search(r"position:(absolute|fixed)", s) and re.search(
+        r"(left|top|right|bottom):-\d{3,}", s
+    ):
+        return "positioned off-screen"
+    # Collapsed to nothing and clipped, which hides overflowing text.
+    if re.search(r"overflow:hidden", s) and re.search(
+        r"(width|height):(0|1)(px)?(?![\d.])", s
+    ):
+        return "clipped to zero size"
+    if re.search(r"clip-path:(inset\(100%|circle\(0)", s) or "clip:rect(0" in s:
+        return "clipped away"
+    if re.search(r"text-indent:-\d{3,}", s):
+        return "text-indent off-screen"
     if m := re.search(r"color:(#[0-9a-f]{3,6}|white)", s):
         if m.group(1) in PAGE_BACKGROUND:
             return f"color:{m.group(1)} (page background)"
@@ -96,6 +112,26 @@ def _hidden_by(style: str) -> str | None:
 # --------------------------------------------------------------------------
 # Reading documents
 # --------------------------------------------------------------------------
+
+
+def _hiding_selectors(css: str) -> dict[str, str]:
+    """Class and id selectors in a stylesheet whose rules hide an element.
+
+    The reader used to inspect only inline `style=` attributes, which missed
+    the ordinary way CSS is written: a rule in a `<style>` block and a
+    `class` on the element. `<style>` is dropped before painting, so the
+    concealment was invisible to the reader *and* to the reviewer — the worst
+    combination. Rules are parsed here and applied by class and id below.
+    """
+    out: dict[str, str] = {}
+    css = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
+    for selectors, body in re.findall(r"([^{}]+)\{([^{}]*)\}", css):
+        if (reason := _hidden_by(body)) is None:
+            continue
+        for sel in selectors.split(","):
+            if m := re.search(r"[.#]([\w-]+)\s*$", sel.strip()):
+                out[m.group(0)[0] + m.group(1)] = f"{reason} (via CSS rule `{sel.strip()}`)"
+    return out
 
 
 class _HTMLReader(HTMLParser):
@@ -118,10 +154,22 @@ class _HTMLReader(HTMLParser):
         self.concealed: list[Concealed] = []
         self._drop = 0
         self._hide: list[str] = []
+        self._css: list[str] = []
+        self._in_style = False
+        self.hiding: dict[str, str] = {}
 
     def handle_starttag(self, tag, attrs):
         d = dict(attrs)
+        if tag == "style":
+            self._in_style = True
         reason = _hidden_by(d.get("style", "")) if d.get("style") else None
+        if reason is None:
+            for cls in d.get("class", "").split():
+                if hit := self.hiding.get("." + cls):
+                    reason = hit
+                    break
+            if reason is None and (hit := self.hiding.get("#" + d.get("id", ""))):
+                reason = hit
         if tag in self.DROP:
             self._drop += 1
         elif reason:
@@ -133,6 +181,8 @@ class _HTMLReader(HTMLParser):
             self.parts.append(" | ")
 
     def handle_endtag(self, tag):
+        if tag == "style":
+            self._in_style = False
         if tag in self.DROP and self._drop:
             self._drop -= 1
         elif self._hide and tag not in self.DROP:
@@ -145,6 +195,10 @@ class _HTMLReader(HTMLParser):
             self.concealed.append(Concealed("HTML comment", "<!-- -->", text))
 
     def handle_data(self, data):
+        if self._in_style:
+            self._css.append(data)
+            self.hiding = _hiding_selectors("".join(self._css))
+            return
         if self._drop:
             return
         if not (text := data.strip()):
