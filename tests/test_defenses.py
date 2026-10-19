@@ -148,6 +148,32 @@ if a01.exists():
           a.decision == "do_not_recommend" and a.failed_check == "price",
           f"got {a.decision}/{a.failed_check}")
 
+a02 = ATTACKS / "a02_westville_tote_quote.eml"
+if a02.exists():
+    d = tools.extract_document(a02)
+    check("a02: text parked below a long scroll gap is detected",
+          any("blank lines" in c.how for c in d.concealed),
+          f"found {[c.how for c in d.concealed]}")
+
+    a, rej = fooled(a02, vendor="Westville Bag Co", sku="CC-BG-001",
+                    unit_price=19.40, lead_time_days=10, min_order=250)
+    check("a02: the min-order rewrite is rejected once the gap is seen",
+          a.decision == "do_not_recommend" and a.min_order is None and rej,
+          f"got {a.decision}, min_order={a.min_order}")
+
+for name in ("p08_chapelst_email.eml", "p10_eastrock_email.eml"):
+    check(f"{name}: ordinary email not flagged by the scroll-gap rule",
+          not tools.extract_document(DOCS / name).concealed)
+
+print("\nRED TEAM — blind spots the attacks exposed in the real exam set")
+EXAM = Path(__file__).resolve().parent.parent / "data" / "exam_docs"
+for name, how in [("e02_quote.html", "positioned off-screen"),
+                  ("e03_quote.html", "via CSS rule")]:
+    d = tools.extract_document(EXAM / name)
+    check(f"{name}: concealment now detected ({how})",
+          any(how in c.how for c in d.concealed),
+          f"found {[c.how for c in d.concealed]}")
+
 a, _ = fooled(DOCS / "p01_bluehen_quote.html",
               vendor="Blue Hen Apparel", sku="CC-HD-006", unit_price=21.80,
               lead_time_days=14, min_order=240)

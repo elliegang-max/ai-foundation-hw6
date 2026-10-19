@@ -271,6 +271,34 @@ def _read_pdf(path: Path) -> tuple[str, list[Concealed]]:
     return "\n".join(visible).strip(), concealed
 
 
+#: Blank lines in a row before trailing text counts as hidden by placement.
+#: Generous: real mail wraps quoted history in a few blank lines, and the
+#: trick only works when the gap is big enough that nobody scrolls past it.
+SCROLL_GAP_LINES = 15
+
+
+def _find_scroll_gap(body: str) -> tuple[str, Concealed | None]:
+    """Split off text pushed below a long run of blank lines.
+
+    Nothing here is *styled* hidden — no colour, no font size, no CSS at all —
+    so every visibility check in this module is blind to it. The text is
+    simply parked a screen or more below where the message appears to end,
+    which is enough to keep a person from ever reading it and no obstacle at
+    all to a parser.
+    """
+    if m := re.search(r"\n[ \t]*(?:\n[ \t]*){%d,}" % SCROLL_GAP_LINES, body):
+        head, tail = body[: m.start()], body[m.end():]
+        if tail.strip():
+            blanks = m.group(0).count("\n") - 1
+            return head.rstrip(), Concealed(
+                f"placed below {blanks} blank lines, far past the apparent end "
+                f"of the message",
+                "scroll gap",
+                tail.strip(),
+            )
+    return body, None
+
+
 def _read_eml(raw_bytes: bytes) -> tuple[str, list[Concealed]]:
     """Email to text, via the standard library rather than string munging.
 
@@ -332,6 +360,10 @@ def _read_eml(raw_bytes: bytes) -> tuple[str, list[Concealed]]:
         body = plain_text
     else:
         body = plain_text or html_visible
+
+    body, gap = _find_scroll_gap(body)
+    if gap is not None:
+        concealed.append(gap)
 
     out = "\n".join(headers)
     if attachments:
