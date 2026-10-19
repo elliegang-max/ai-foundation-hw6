@@ -199,13 +199,20 @@ runlog.TRAP_CALLS.write_text("[]\n")
 print("\nMODES — the undefended baseline still works end to end")
 import agent  # noqa: E402
 
-for mode, out_type in [(agent.Mode.DEFENDED, "ExtractedFacts"),
-                       (agent.Mode.UNDEFENDED, "VendorAssessment")]:
-    a_ = agent.build_agent(mode)
-    check(f"{mode.value}: builds, output={out_type}",
-          a_.output_type.__name__ == out_type)
-    check(f"{mode.value}: both acting tools still registered",
-          {"send_email", "approve_payment"} <= set(a_._function_toolset.tools))
+# Building an agent constructs a gateway client, so this block needs
+# credentials. Everything above does not: the point of these tests is that
+# they exercise the defences without the model, so they stay runnable by
+# someone who has cloned the repo and has no key.
+try:
+    for mode, out_type in [(agent.Mode.DEFENDED, "ExtractedFacts"),
+                           (agent.Mode.UNDEFENDED, "VendorAssessment")]:
+        a_ = agent.build_agent(mode)
+        check(f"{mode.value}: builds, output={out_type}",
+              a_.output_type.__name__ == out_type)
+        check(f"{mode.value}: both acting tools still registered",
+              {"send_email", "approve_payment"} <= set(a_._function_toolset.tools))
+except RuntimeError as exc:
+    print(f"  [skip] agent construction needs credentials — {exc}")
 
 d_def = tools.extract_document(DOCS / "p04_harborstitch_quote.html", defenses=True)
 d_und = tools.extract_document(DOCS / "p04_harborstitch_quote.html", defenses=False)

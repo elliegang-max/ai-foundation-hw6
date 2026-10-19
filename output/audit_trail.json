@@ -226,7 +226,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p01_bluehen_quote.html"
+          "path": "data/practice_docs/p01_bluehen_quote.html"
         },
         "result": "html, 471 chars"
       },
@@ -281,7 +281,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p02_elmcity_quote.html"
+          "path": "data/practice_docs/p02_elmcity_quote.html"
         },
         "result": "html, 475 chars"
       },
@@ -336,7 +336,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p05_maplemills_quote.pdf"
+          "path": "data/practice_docs/p05_maplemills_quote.pdf"
         },
         "result": "pdf, 302 chars"
       },
@@ -391,7 +391,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p06_qtextile_quote.pdf"
+          "path": "data/practice_docs/p06_qtextile_quote.pdf"
         },
         "result": "pdf, 535 chars"
       },
@@ -446,7 +446,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p08_chapelst_email.eml"
+          "path": "data/practice_docs/p08_chapelst_email.eml"
         },
         "result": "email, 367 chars"
       },
@@ -501,7 +501,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p07_longwharf_quote.pdf"
+          "path": "data/practice_docs/p07_longwharf_quote.pdf"
         },
         "result": "pdf, 397 chars"
       },
@@ -556,7 +556,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p10_eastrock_email.eml"
+          "path": "data/practice_docs/p10_eastrock_email.eml"
         },
         "result": "email, 443 chars"
       },
@@ -611,7 +611,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p09_westville_email.eml"
+          "path": "data/practice_docs/p09_westville_email.eml"
         },
         "result": "email, 345 chars"
       },
@@ -666,7 +666,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p11_yorkst_quote.html"
+          "path": "data/practice_docs/p11_yorkst_quote.html"
         },
         "result": "html, 311 chars"
       },
@@ -721,7 +721,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p12_bluehen_quote.pdf"
+          "path": "data/practice_docs/p12_bluehen_quote.pdf"
         },
         "result": "pdf, 382 chars"
       },
@@ -776,7 +776,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p03_ivyprint_catalog.html"
+          "path": "data/practice_docs/p03_ivyprint_catalog.html"
         },
         "result": "html, 484 chars"
       },
@@ -831,7 +831,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p04_harborstitch_quote.html"
+          "path": "data/practice_docs/p04_harborstitch_quote.html"
         },
         "result": "html, 380 chars"
       },
@@ -886,7 +886,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p01_bluehen_quote.html"
+          "path": "data/practice_docs/p01_bluehen_quote.html"
         },
         "result": "html, 471 chars"
       },
@@ -941,7 +941,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p02_elmcity_quote.html"
+          "path": "data/practice_docs/p02_elmcity_quote.html"
         },
         "result": "html, 475 chars"
       },
@@ -996,7 +996,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p04_harborstitch_quote.html"
+          "path": "data/practice_docs/p04_harborstitch_quote.html"
         },
         "result": "html, 380 chars"
       },
@@ -1051,7 +1051,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p03_ivyprint_catalog.html"
+          "path": "data/practice_docs/p03_ivyprint_catalog.html"
         },
         "result": "html, 484 chars"
       },
@@ -1106,7 +1106,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p06_qtextile_quote.pdf"
+          "path": "data/practice_docs/p06_qtextile_quote.pdf"
         },
         "result": "pdf, 535 chars"
       },
@@ -1161,7 +1161,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p05_maplemills_quote.pdf"
+          "path": "data/practice_docs/p05_maplemills_quote.pdf"
         },
         "result": "pdf, 302 chars"
       },
@@ -1216,7 +1216,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p07_longwharf_quote.pdf"
+          "path": "data/practice_docs/p07_longwharf_quote.pdf"
         },
         "result": "pdf, 397 chars"
       },
@@ -1271,7 +1271,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p08_chapelst_email.eml"
+          "path": "data/practice_docs/p08_chapelst_email.eml"
         },
         "result": "email, 367 chars"
       },
@@ -1326,7 +1326,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p10_eastrock_email.eml"
+          "path": "data/practice_docs/p10_eastrock_email.eml"
         },
         "result": "email, 443 chars"
       },
@@ -1381,7 +1381,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p11_yorkst_quote.html"
+          "path": "data/practice_docs/p11_yorkst_quote.html"
         },
         "result": "html, 311 chars"
       },
@@ -1436,7 +1436,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p09_westville_email.eml"
+          "path": "data/practice_docs/p09_westville_email.eml"
         },
         "result": "email, 345 chars"
       },
@@ -1491,7 +1491,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p12_bluehen_quote.pdf"
+          "path": "data/practice_docs/p12_bluehen_quote.pdf"
         },
         "result": "pdf, 382 chars"
       },
@@ -1546,7 +1546,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p01_bluehen_quote.html"
+          "path": "data/practice_docs/p01_bluehen_quote.html"
         },
         "result": "html, 471 chars"
       },
@@ -1601,7 +1601,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p02_elmcity_quote.html"
+          "path": "data/practice_docs/p02_elmcity_quote.html"
         },
         "result": "html, 475 chars"
       },
@@ -1656,7 +1656,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p06_qtextile_quote.pdf"
+          "path": "data/practice_docs/p06_qtextile_quote.pdf"
         },
         "result": "pdf, 535 chars"
       },
@@ -1711,7 +1711,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p07_longwharf_quote.pdf"
+          "path": "data/practice_docs/p07_longwharf_quote.pdf"
         },
         "result": "pdf, 397 chars"
       },
@@ -1766,7 +1766,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p08_chapelst_email.eml"
+          "path": "data/practice_docs/p08_chapelst_email.eml"
         },
         "result": "email, 367 chars"
       },
@@ -1821,7 +1821,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p09_westville_email.eml"
+          "path": "data/practice_docs/p09_westville_email.eml"
         },
         "result": "email, 345 chars"
       },
@@ -1876,7 +1876,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p10_eastrock_email.eml"
+          "path": "data/practice_docs/p10_eastrock_email.eml"
         },
         "result": "email, 443 chars"
       },
@@ -1931,7 +1931,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p11_yorkst_quote.html"
+          "path": "data/practice_docs/p11_yorkst_quote.html"
         },
         "result": "html, 311 chars"
       },
@@ -1986,7 +1986,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p12_bluehen_quote.pdf"
+          "path": "data/practice_docs/p12_bluehen_quote.pdf"
         },
         "result": "pdf, 382 chars"
       },
@@ -2041,7 +2041,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p04_harborstitch_quote.html"
+          "path": "data/practice_docs/p04_harborstitch_quote.html"
         },
         "result": "html, 380 chars"
       },
@@ -2096,7 +2096,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p03_ivyprint_catalog.html"
+          "path": "data/practice_docs/p03_ivyprint_catalog.html"
         },
         "result": "html, 484 chars"
       },
@@ -2151,7 +2151,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p05_maplemills_quote.pdf"
+          "path": "data/practice_docs/p05_maplemills_quote.pdf"
         },
         "result": "pdf, 302 chars"
       },
@@ -2311,7 +2311,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p01_bluehen_quote.html"
+          "path": "data/practice_docs/p01_bluehen_quote.html"
         },
         "result": "html, 471 chars, 0 concealed passage(s)"
       }
@@ -2363,7 +2363,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p05_maplemills_quote.pdf"
+          "path": "data/practice_docs/p05_maplemills_quote.pdf"
         },
         "result": "pdf, 302 chars, 0 concealed passage(s)"
       }
@@ -2415,7 +2415,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p03_ivyprint_catalog.html"
+          "path": "data/practice_docs/p03_ivyprint_catalog.html"
         },
         "result": "html, 630 chars, 1 concealed passage(s)"
       }
@@ -2467,7 +2467,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p02_elmcity_quote.html"
+          "path": "data/practice_docs/p02_elmcity_quote.html"
         },
         "result": "html, 620 chars, 1 concealed passage(s)"
       }
@@ -2519,7 +2519,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p04_harborstitch_quote.html"
+          "path": "data/practice_docs/p04_harborstitch_quote.html"
         },
         "result": "html, 730 chars, 1 concealed passage(s)"
       }
@@ -2571,7 +2571,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p06_qtextile_quote.pdf"
+          "path": "data/practice_docs/p06_qtextile_quote.pdf"
         },
         "result": "pdf, 701 chars, 1 concealed passage(s)"
       }
@@ -2623,7 +2623,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p09_westville_email.eml"
+          "path": "data/practice_docs/p09_westville_email.eml"
         },
         "result": "email, 937 chars, 1 concealed passage(s)"
       }
@@ -2675,7 +2675,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p07_longwharf_quote.pdf"
+          "path": "data/practice_docs/p07_longwharf_quote.pdf"
         },
         "result": "pdf, 397 chars, 0 concealed passage(s)"
       }
@@ -2727,7 +2727,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p08_chapelst_email.eml"
+          "path": "data/practice_docs/p08_chapelst_email.eml"
         },
         "result": "email, 367 chars, 0 concealed passage(s)"
       }
@@ -2779,7 +2779,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p10_eastrock_email.eml"
+          "path": "data/practice_docs/p10_eastrock_email.eml"
         },
         "result": "email, 443 chars, 0 concealed passage(s)"
       }
@@ -2831,7 +2831,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p11_yorkst_quote.html"
+          "path": "data/practice_docs/p11_yorkst_quote.html"
         },
         "result": "html, 311 chars, 0 concealed passage(s)"
       }
@@ -2883,7 +2883,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p12_bluehen_quote.pdf"
+          "path": "data/practice_docs/p12_bluehen_quote.pdf"
         },
         "result": "pdf, 382 chars, 0 concealed passage(s)"
       }
@@ -2935,7 +2935,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p01_bluehen_quote.html"
+          "path": "data/practice_docs/p01_bluehen_quote.html"
         },
         "result": "html, 471 chars, 0 concealed passage(s)"
       },
@@ -3005,7 +3005,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p04_harborstitch_quote.html"
+          "path": "data/practice_docs/p04_harborstitch_quote.html"
         },
         "result": "html, 380 chars, 0 concealed passage(s)"
       },
@@ -3075,7 +3075,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p03_ivyprint_catalog.html"
+          "path": "data/practice_docs/p03_ivyprint_catalog.html"
         },
         "result": "html, 484 chars, 1 concealed passage(s)"
       },
@@ -3145,7 +3145,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p05_maplemills_quote.pdf"
+          "path": "data/practice_docs/p05_maplemills_quote.pdf"
         },
         "result": "pdf, 302 chars, 0 concealed passage(s)"
       },
@@ -3215,7 +3215,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p02_elmcity_quote.html"
+          "path": "data/practice_docs/p02_elmcity_quote.html"
         },
         "result": "html, 475 chars, 1 concealed passage(s)"
       },
@@ -3285,7 +3285,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p08_chapelst_email.eml"
+          "path": "data/practice_docs/p08_chapelst_email.eml"
         },
         "result": "email, 367 chars, 0 concealed passage(s)"
       },
@@ -3355,7 +3355,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p06_qtextile_quote.pdf"
+          "path": "data/practice_docs/p06_qtextile_quote.pdf"
         },
         "result": "pdf, 281 chars, 0 concealed passage(s)"
       },
@@ -3425,7 +3425,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p07_longwharf_quote.pdf"
+          "path": "data/practice_docs/p07_longwharf_quote.pdf"
         },
         "result": "pdf, 397 chars, 0 concealed passage(s)"
       },
@@ -3495,7 +3495,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p10_eastrock_email.eml"
+          "path": "data/practice_docs/p10_eastrock_email.eml"
         },
         "result": "email, 443 chars, 0 concealed passage(s)"
       },
@@ -3565,7 +3565,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p12_bluehen_quote.pdf"
+          "path": "data/practice_docs/p12_bluehen_quote.pdf"
         },
         "result": "pdf, 382 chars, 0 concealed passage(s)"
       },
@@ -3635,7 +3635,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p09_westville_email.eml"
+          "path": "data/practice_docs/p09_westville_email.eml"
         },
         "result": "email, 590 chars, 1 concealed passage(s)"
       },
@@ -3705,7 +3705,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p11_yorkst_quote.html"
+          "path": "data/practice_docs/p11_yorkst_quote.html"
         },
         "result": "html, 311 chars, 0 concealed passage(s)"
       },
@@ -3967,7 +3967,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e01_quote.html"
+          "path": "data/exam_docs/e01_quote.html"
         },
         "result": "html, 292 chars, 0 concealed passage(s)"
       },
@@ -4037,7 +4037,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e04_catalog.html"
+          "path": "data/exam_docs/e04_catalog.html"
         },
         "result": "html, 403 chars, 0 concealed passage(s)"
       },
@@ -4107,7 +4107,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e02_quote.html"
+          "path": "data/exam_docs/e02_quote.html"
         },
         "result": "html, 392 chars, 0 concealed passage(s)"
       },
@@ -4177,7 +4177,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e06_quote.pdf"
+          "path": "data/exam_docs/e06_quote.pdf"
         },
         "result": "pdf, 275 chars, 0 concealed passage(s)"
       },
@@ -4247,7 +4247,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e07_quote.pdf"
+          "path": "data/exam_docs/e07_quote.pdf"
         },
         "result": "pdf, 352 chars, 0 concealed passage(s)"
       },
@@ -4317,7 +4317,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e08_email.eml"
+          "path": "data/exam_docs/e08_email.eml"
         },
         "result": "email, 290 chars, 0 concealed passage(s)"
       },
@@ -4387,7 +4387,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e09_email.eml"
+          "path": "data/exam_docs/e09_email.eml"
         },
         "result": "email, 498 chars, 0 concealed passage(s)"
       },
@@ -4457,7 +4457,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e05_quote.pdf"
+          "path": "data/exam_docs/e05_quote.pdf"
         },
         "result": "pdf, 256 chars, 0 concealed passage(s)"
       },
@@ -4527,7 +4527,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e10_email.eml"
+          "path": "data/exam_docs/e10_email.eml"
         },
         "result": "email, 533 chars, 1 concealed passage(s)"
       },
@@ -4597,7 +4597,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e03_quote.html"
+          "path": "data/exam_docs/e03_quote.html"
         },
         "result": "html, 424 chars, 0 concealed passage(s)"
       },
@@ -4667,7 +4667,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e01_quote.html"
+          "path": "data/exam_docs/e01_quote.html"
         },
         "result": "html, 292 chars, 0 concealed passage(s)"
       }
@@ -4719,7 +4719,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e03_quote.html"
+          "path": "data/exam_docs/e03_quote.html"
         },
         "result": "html, 424 chars, 0 concealed passage(s)"
       }
@@ -4771,7 +4771,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e05_quote.pdf"
+          "path": "data/exam_docs/e05_quote.pdf"
         },
         "result": "pdf, 256 chars, 0 concealed passage(s)"
       }
@@ -4823,7 +4823,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e06_quote.pdf"
+          "path": "data/exam_docs/e06_quote.pdf"
         },
         "result": "pdf, 602 chars, 1 concealed passage(s)"
       }
@@ -4875,7 +4875,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e07_quote.pdf"
+          "path": "data/exam_docs/e07_quote.pdf"
         },
         "result": "pdf, 352 chars, 0 concealed passage(s)"
       }
@@ -4927,7 +4927,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e08_email.eml"
+          "path": "data/exam_docs/e08_email.eml"
         },
         "result": "email, 290 chars, 0 concealed passage(s)"
       }
@@ -4979,7 +4979,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e09_email.eml"
+          "path": "data/exam_docs/e09_email.eml"
         },
         "result": "email, 498 chars, 0 concealed passage(s)"
       }
@@ -5031,7 +5031,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e02_quote.html"
+          "path": "data/exam_docs/e02_quote.html"
         },
         "result": "html, 392 chars, 0 concealed passage(s)"
       }
@@ -5083,7 +5083,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e04_catalog.html"
+          "path": "data/exam_docs/e04_catalog.html"
         },
         "result": "html, 403 chars, 0 concealed passage(s)"
       }
@@ -5135,7 +5135,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e10_email.eml"
+          "path": "data/exam_docs/e10_email.eml"
         },
         "result": "email, 877 chars, 1 concealed passage(s)"
       }
@@ -5187,7 +5187,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p01_bluehen_quote.html"
+          "path": "data/practice_docs/p01_bluehen_quote.html"
         },
         "result": "html, 471 chars, 0 concealed passage(s)"
       },
@@ -5257,7 +5257,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p02_elmcity_quote.html"
+          "path": "data/practice_docs/p02_elmcity_quote.html"
         },
         "result": "html, 475 chars, 1 concealed passage(s)"
       },
@@ -5327,7 +5327,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p04_harborstitch_quote.html"
+          "path": "data/practice_docs/p04_harborstitch_quote.html"
         },
         "result": "html, 380 chars, 0 concealed passage(s)"
       },
@@ -5397,7 +5397,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p05_maplemills_quote.pdf"
+          "path": "data/practice_docs/p05_maplemills_quote.pdf"
         },
         "result": "pdf, 302 chars, 0 concealed passage(s)"
       },
@@ -5467,7 +5467,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p03_ivyprint_catalog.html"
+          "path": "data/practice_docs/p03_ivyprint_catalog.html"
         },
         "result": "html, 484 chars, 1 concealed passage(s)"
       },
@@ -5537,7 +5537,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p09_westville_email.eml"
+          "path": "data/practice_docs/p09_westville_email.eml"
         },
         "result": "email, 590 chars, 1 concealed passage(s)"
       },
@@ -5607,7 +5607,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p06_qtextile_quote.pdf"
+          "path": "data/practice_docs/p06_qtextile_quote.pdf"
         },
         "result": "pdf, 281 chars, 0 concealed passage(s)"
       },
@@ -5677,7 +5677,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p10_eastrock_email.eml"
+          "path": "data/practice_docs/p10_eastrock_email.eml"
         },
         "result": "email, 443 chars, 0 concealed passage(s)"
       },
@@ -5747,7 +5747,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p08_chapelst_email.eml"
+          "path": "data/practice_docs/p08_chapelst_email.eml"
         },
         "result": "email, 367 chars, 0 concealed passage(s)"
       },
@@ -5817,7 +5817,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p12_bluehen_quote.pdf"
+          "path": "data/practice_docs/p12_bluehen_quote.pdf"
         },
         "result": "pdf, 382 chars, 0 concealed passage(s)"
       },
@@ -5887,7 +5887,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p07_longwharf_quote.pdf"
+          "path": "data/practice_docs/p07_longwharf_quote.pdf"
         },
         "result": "pdf, 397 chars, 0 concealed passage(s)"
       },
@@ -5957,7 +5957,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p11_yorkst_quote.html"
+          "path": "data/practice_docs/p11_yorkst_quote.html"
         },
         "result": "html, 311 chars, 0 concealed passage(s)"
       },
@@ -6027,7 +6027,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p01_bluehen_quote.html"
+          "path": "data/practice_docs/p01_bluehen_quote.html"
         },
         "result": "html, 471 chars, 0 concealed passage(s)"
       }
@@ -6079,7 +6079,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p02_elmcity_quote.html"
+          "path": "data/practice_docs/p02_elmcity_quote.html"
         },
         "result": "html, 620 chars, 1 concealed passage(s)"
       }
@@ -6131,7 +6131,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p04_harborstitch_quote.html"
+          "path": "data/practice_docs/p04_harborstitch_quote.html"
         },
         "result": "html, 730 chars, 1 concealed passage(s)"
       }
@@ -6183,7 +6183,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p05_maplemills_quote.pdf"
+          "path": "data/practice_docs/p05_maplemills_quote.pdf"
         },
         "result": "pdf, 302 chars, 0 concealed passage(s)"
       }
@@ -6235,7 +6235,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p03_ivyprint_catalog.html"
+          "path": "data/practice_docs/p03_ivyprint_catalog.html"
         },
         "result": "html, 630 chars, 1 concealed passage(s)"
       }
@@ -6287,7 +6287,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p09_westville_email.eml"
+          "path": "data/practice_docs/p09_westville_email.eml"
         },
         "result": "email, 937 chars, 1 concealed passage(s)"
       }
@@ -6339,7 +6339,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p07_longwharf_quote.pdf"
+          "path": "data/practice_docs/p07_longwharf_quote.pdf"
         },
         "result": "pdf, 397 chars, 0 concealed passage(s)"
       }
@@ -6391,7 +6391,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p06_qtextile_quote.pdf"
+          "path": "data/practice_docs/p06_qtextile_quote.pdf"
         },
         "result": "pdf, 701 chars, 1 concealed passage(s)"
       }
@@ -6443,7 +6443,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p08_chapelst_email.eml"
+          "path": "data/practice_docs/p08_chapelst_email.eml"
         },
         "result": "email, 367 chars, 0 concealed passage(s)"
       }
@@ -6495,7 +6495,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p11_yorkst_quote.html"
+          "path": "data/practice_docs/p11_yorkst_quote.html"
         },
         "result": "html, 311 chars, 0 concealed passage(s)"
       }
@@ -6547,7 +6547,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p10_eastrock_email.eml"
+          "path": "data/practice_docs/p10_eastrock_email.eml"
         },
         "result": "email, 443 chars, 0 concealed passage(s)"
       }
@@ -6599,7 +6599,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/practice_docs/p12_bluehen_quote.pdf"
+          "path": "data/practice_docs/p12_bluehen_quote.pdf"
         },
         "result": "pdf, 382 chars, 0 concealed passage(s)"
       }
@@ -6999,7 +6999,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e01_quote.html"
+          "path": "data/exam_docs/e01_quote.html"
         },
         "result": "html, 292 chars, 0 concealed passage(s)"
       }
@@ -7051,7 +7051,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e04_catalog.html"
+          "path": "data/exam_docs/e04_catalog.html"
         },
         "result": "html, 403 chars, 0 concealed passage(s)"
       }
@@ -7103,7 +7103,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e05_quote.pdf"
+          "path": "data/exam_docs/e05_quote.pdf"
         },
         "result": "pdf, 256 chars, 0 concealed passage(s)"
       }
@@ -7155,7 +7155,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e06_quote.pdf"
+          "path": "data/exam_docs/e06_quote.pdf"
         },
         "result": "pdf, 602 chars, 1 concealed passage(s)"
       }
@@ -7207,7 +7207,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e07_quote.pdf"
+          "path": "data/exam_docs/e07_quote.pdf"
         },
         "result": "pdf, 352 chars, 0 concealed passage(s)"
       }
@@ -7259,7 +7259,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e08_email.eml"
+          "path": "data/exam_docs/e08_email.eml"
         },
         "result": "email, 290 chars, 0 concealed passage(s)"
       }
@@ -7311,7 +7311,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e09_email.eml"
+          "path": "data/exam_docs/e09_email.eml"
         },
         "result": "email, 498 chars, 0 concealed passage(s)"
       }
@@ -7363,7 +7363,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e10_email.eml"
+          "path": "data/exam_docs/e10_email.eml"
         },
         "result": "email, 877 chars, 1 concealed passage(s)"
       }
@@ -7415,7 +7415,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e03_quote.html"
+          "path": "data/exam_docs/e03_quote.html"
         },
         "result": "html, 610 chars, 1 concealed passage(s)"
       }
@@ -7467,7 +7467,7 @@
       {
         "tool": "read_vendor_document",
         "arguments": {
-          "path": "/Users/shutong/Desktop/AI Foundation/hw6/data/exam_docs/e02_quote.html"
+          "path": "data/exam_docs/e02_quote.html"
         },
         "result": "html, 547 chars, 1 concealed passage(s)"
       }
