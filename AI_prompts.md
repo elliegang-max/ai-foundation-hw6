@@ -33,3 +33,25 @@ Read the hw3, hw4 and hw5 repos to pick up the house conventions, then scaffolde
 Python 3.14 `.venv`, and empty `data/`, `output/` and `scripts/` directories.
 Wrote no assignment code — asked for the spec, the dataset and any handout files
 first.
+
+---
+
+## Problem 1a — The one-model rule
+
+**Prompt** — 2026-10-19
+
+> every AI call in hw6 must use gpt-6-luna, no other model, for any call
+
+*(Relayed to this session by another Claude session, not typed here directly —
+replace with the exact wording.)*
+
+**Response**
+
+Made the rule structural rather than a thing to remember. `config.py` holds
+`MODEL_NAME` as the single place the name is written; `config.model()` returns
+it and raises on any other name; `config.client()` is the only function that
+builds a gateway client, so there is no second route a model id can enter by.
+Recorded the constraint in `RULES.md` (hw5's convention for assignment-given
+rules) and in the README, and listed the details still to confirm against the
+handout — the exact wire id, the provider, and the client library the course
+expects.

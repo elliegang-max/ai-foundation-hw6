@@ -28,6 +28,32 @@ cp .env.example .env     # only if you want per-project overrides
 
 ---
 
+## One model, one place
+
+**This assignment allows exactly one model: `gpt-6-luna`.** No other model id
+may appear in the code or in a run — points are deducted for it.
+
+That is enforced structurally rather than by remembering:
+
+- `MODEL_NAME` in [`config.py`](config.py) is the only place the name is written.
+- `config.model()` returns it and **raises on any other name**.
+- `config.client()` is the only function that builds a gateway client, so there
+  is no second route a stray model id could take.
+
+```python
+import config
+
+resp = await config.client().chat.completions.create(
+    model=config.model(),          # never a literal
+    messages=[...],
+)
+```
+
+Changing model means editing one constant. See [RULES.md](RULES.md) for the
+full constraint and the few details still to confirm against the handout.
+
+---
+
 ## Layout
 
 | Path             | What goes here                                           |
@@ -36,4 +62,6 @@ cp .env.example .env     # only if you want per-project overrides
 | `output/`        | Everything the code produces: run artefacts, `harness.md`, figures. |
 | `scripts/`       | One-off runners and helpers.                              |
 | `AI_prompts.md`  | The prompt log, one section per problem.                  |
+| `config.py`      | The model constant, the credential chain, the one client. |
+| `RULES.md`       | Constraints the assignment imposes.                       |
 | `.env.example`   | Environment template. The real `.env` is never committed. |
