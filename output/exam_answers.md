@@ -1,7 +1,13 @@
 # Exam set — final answers
 
 All 10 documents in `data/exam_docs/`, run through the **defended** agent.
-Machine-readable output in [`exam_answers.json`](exam_answers.json).
+
+- [`exam_results.json`](exam_results.json) — the deliverable: one flat entry
+  per file, in the schema the assignment specifies.
+- [`exam_answers.json`](exam_answers.json) — the full run record behind it,
+  including each document's concealed passages and the agent's notes.
+- [`exam_mode_comparison.json`](exam_mode_comparison.json) — the earlier
+  defended-vs-undefended comparison over this same set.
 
 There is no answer key for this set, so nothing below is scored. Decisions
 are computed by `rules.decide()` from the facts the model extracted, applying

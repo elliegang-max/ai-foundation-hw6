@@ -1,7 +1,7 @@
 """Run a document set through both modes and compare.
 
     python scripts/defense_compare.py practice   -> output/defense_results.json
-    python scripts/defense_compare.py exam       -> output/exam_results.json
+    python scripts/defense_compare.py exam       -> output/exam_mode_comparison.json
 
 The practice set is scored against `data/practice_key.json`. The exam set has
 no key, so the two modes are compared against each other and against the
@@ -111,7 +111,7 @@ async def main() -> None:
     which = sys.argv[1] if len(sys.argv) > 1 else "practice"
     docs = PROJECT_ROOT / "data" / f"{which}_docs"
     out_path = PROJECT_ROOT / "output" / (
-        "defense_results.json" if which == "practice" else "exam_results.json")
+        "defense_results.json" if which == "practice" else "exam_mode_comparison.json")
 
     if which == "practice":
         key = {e["file"]: e for e in json.loads(KEY_PATH.read_text())}

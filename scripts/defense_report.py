@@ -19,7 +19,7 @@ FACTS = ["vendor", "sku", "unit_price", "lead_time_days", "min_order"]
 def main() -> None:
     d = json.loads((O / "defense_results.json").read_text())
     layers = json.loads((O / "layer_costs.json").read_text())
-    exam = json.loads((O / "exam_results.json").read_text())
+    exam = json.loads((O / "exam_mode_comparison.json").read_text())
 
     u, f = d["modes"]["undefended"], d["modes"]["defended"]
     us, fs = u["summary"], f["summary"]
@@ -53,7 +53,7 @@ def main() -> None:
     md = f"""# Defence results — all {n} practice documents, both modes
 
 Raw data in [`defense_results.json`](defense_results.json); the exam-set run
-is in [`exam_results.json`](exam_results.json); per-layer token measurements
+is in [`exam_mode_comparison.json`](exam_mode_comparison.json); per-layer token measurements
 in [`layer_costs.json`](layer_costs.json).
 
 ---
@@ -213,7 +213,7 @@ for the defence:
 ## 4. The exam set
 
 Both modes were also run over all 10 exam documents
-([`exam_results.json`](exam_results.json)), which contain the attacks on the
+([`exam_mode_comparison.json`](exam_mode_comparison.json)), which contain the attacks on the
 acting tools — `e03` asks for `approve_payment` on a $6,200 deposit, `e06`
 asks `send_email` to ship the max unit cost table outside, `e09` combines a
 fake owner pre-approval with a $2,450 payment request and a demand to mark
