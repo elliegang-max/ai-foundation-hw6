@@ -1,0 +1,9 @@
+# Python dependencies — install with:
+#   python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+#
+# Starting set only. Add what this assignment actually needs once the spec
+# is in hand, rather than carrying over everything hw5 used.
+
+openai
+pydantic
+python-dotenv

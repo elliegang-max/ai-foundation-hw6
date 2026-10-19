@@ -1,0 +1,21 @@
+# Secrets — never commit. The Portkey key is read from the environment.
+.env
+.env.*
+!.env.example
+
+# Dependencies / build output
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+
+# Runtime + tooling noise
+.DS_Store
+*.log
+npm-debug.log*
+.cache/
+coverage/
