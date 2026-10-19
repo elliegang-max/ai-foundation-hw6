@@ -1,0 +1,15 @@
+{
+  "model": "gpt-6-luna",
+  "file": "data/shop_handbook.md",
+  "bytes": 29241,
+  "characters": 28903,
+  "words": 6127,
+  "lines": 339,
+  "measurement": {
+    "method": "two chat.completions calls with identical scaffolding; usage.prompt_tokens differenced to cancel the chat template",
+    "prompt_tokens_with_handbook": 10064,
+    "prompt_tokens_empty_message": 6,
+    "handbook_tokens": 10058
+  },
+  "chars_per_token": 2.874
+}

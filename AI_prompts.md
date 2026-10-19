@@ -87,3 +87,29 @@ followed by a pasted list:
 **What Claude did.** Rewrote this file to that shape and replaced the
 paraphrased placeholders it had been holding with the prompts above, quoted
 verbatim.
+
+---
+
+## Unnumbered — the handbook's token count and cost
+
+*(Awaiting its problem number and title from the handout.)*
+
+### Prompt 5 — 2026-10-19
+
+> Unzip data.zip. Look through data/shop_handbook.md. This is the Campus
+> Customs Shop Handbook, Also look at data/prices.json, the gpt-6-luna price
+> list. Find out how many tokens the handbook is. In output/handbook_estimate.md
+> write: The token count and how you got it
+
+followed by a pasted bullet:
+
+> * What the handbook alone costs in dollars on one call, and on 1,000 calls,
+>   with cached tokens and without them. Show your math.
+
+**What Claude did.** Did not unzip anything: `~/Downloads/data.zip` is the hw3
+dataset (216 files, 16MB of product photos and ad videos), not hw6's, and
+hw6's data was already in `data/` and verified. Flagged it as an instruction
+that looks carried over from an earlier assignment. Measured the handbook's
+token count against the gateway rather than estimating it, and wrote
+`output/handbook_estimate.md` with the count, the method, and the four cost
+cases.
