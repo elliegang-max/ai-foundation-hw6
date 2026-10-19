@@ -452,3 +452,20 @@ required items, and put dollars beside tokens in the defence-cost section.
 Rendered and read it again: the projection table was printing its f-string
 placeholders literally, the contents list was uppercasing its last entry and
 numbering one short of the body, and two run-counts disagreed. All fixed.
+
+### Prompt 23 — 2026-10-19
+
+> astehtic design of font, color and layout that makes it easy to read
+
+**What Claude did.** Measured the problem before changing anything: the page
+was running about 105 characters a line, where serif prose wants 62–72. Rebuilt
+it as a reading column of 36rem at 17.5px/1.72 in a system serif stack, with a
+CSS grid that lets charts, stat tiles and the two widest tables break out past
+the text column instead of being squeezed into it. Added section eyebrows,
+tabular figures with right-aligned numeric columns, a warmer paper and ink
+palette, a two-column contents list, and proper print and mobile rules. Checked
+every text role for contrast in the browser rather than guessing — muted text
+and links were below AA at 3.91 and 4.23, so both were darkened; links now use
+their own token so the chart series colours, which were validated separately,
+were left untouched. All ten roles now pass AA in both light and dark. Verified
+no horizontal overflow at 375px and that the file is still self-contained.

@@ -88,11 +88,19 @@ def grouped_chart(labels, a_vals, b_vals, a_name, b_name, *, fmt=lambda v: v,
     return legend + "\n".join(out)
 
 
-def table(headers, rows, cls=""):
-    th = "".join(f"<th>{e(h)}</th>" for h in headers)
+def table(headers, rows, cls="", align=""):
+    """`align` is one char per column: 'l' left, 'r' right (numeric)."""
+    align = (align or "l" * len(headers)).ljust(len(headers), "l")
+    th = "".join(
+        f'<th class="{"r" if a == "r" else ""}">{e(h)}</th>'
+        for h, a in zip(headers, align))
     trs = "".join(
-        "<tr>" + "".join(f"<td>{c}</td>" for c in r) + "</tr>" for r in rows)
-    return f'<table class="{cls}"><thead><tr>{th}</tr></thead><tbody>{trs}</tbody></table>'
+        "<tr>" + "".join(
+            f'<td class="{"r" if a == "r" else ""}">{c}</td>'
+            for c, a in zip(r, align)) + "</tr>"
+        for r in rows)
+    return (f'<div class="tbl {cls}"><table>'
+            f'<thead><tr>{th}</tr></thead><tbody>{trs}</tbody></table></div>')
 
 
 def main() -> None:
@@ -195,85 +203,211 @@ def main() -> None:
     ]
 
     css = """
-:root{color-scheme:light dark;
---bg:#faf9f7;--surface:#fcfcfb;--line:#e3e1dc;--ink:#14130f;--ink-2:#52514e;
---ink-3:#7a786f;--a:#2a78d6;--b:#eb6834;--n:#9a988f;--ok:#008300;--no:#c0392b;
---code:#f2f1ed;}
+/* ---- tokens ------------------------------------------------------- */
+:root{
+  color-scheme:light dark;
+  --paper:#fbfaf8; --surface:#ffffff; --sunk:#f4f2ed;
+  --rule:#e6e1d8; --rule-soft:#efebe3;
+  --ink:#1a1815; --ink-2:#4b463e; --ink-3:#736c61;
+  --a:#2a78d6; --b:#eb6834; --n:#a9a399;   /* chart series: validated */
+  --link:#1d5fb0;                          /* text only, darker for contrast */
+  --ok:#1a7a35; --no:#b63b2c;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",
+          Georgia,ui-serif,serif;
+  --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,
+         "Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+}
 @media (prefers-color-scheme:dark){:root{
---bg:#141413;--surface:#1a1a19;--line:#33322e;--ink:#f0efec;--ink-2:#c3c2b7;
---ink-3:#95938a;--a:#3987e5;--b:#d95926;--n:#6e6c64;--ok:#3fae3f;--no:#e66767;
---code:#232320;}}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);
-font:16px/1.65 ui-serif,Georgia,"Times New Roman",serif;}
-.wrap{max-width:860px;margin:0 auto;padding:56px 28px 96px}
-h1{font-size:2.1rem;line-height:1.2;margin:0 0 6px;letter-spacing:-.02em}
-h2{font-size:1.4rem;margin:56px 0 4px;padding-top:22px;border-top:1px solid var(--line);
-letter-spacing:-.01em}
-h3{font-size:1.06rem;margin:30px 0 6px}
-p,li{color:var(--ink-2)}
-.sub{color:var(--ink-3);font-size:.95rem;margin:0 0 4px}
-.lede{font-size:1.1rem;color:var(--ink-2)}
-code{background:var(--code);padding:1px 5px;border-radius:4px;
-font:.86em/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
-white-space:nowrap}
-td code{padding:1px 3px;font-size:.8em}
-table{width:100%;border-collapse:collapse;margin:18px 0;font-size:.88rem;
-font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
-th{text-align:left;font-weight:600;color:var(--ink-3);font-size:.76rem;
-text-transform:uppercase;letter-spacing:.06em;padding:7px 10px;
-border-bottom:1px solid var(--line)}
-td{padding:8px 10px;border-bottom:1px solid var(--line);color:var(--ink-2);
-vertical-align:top}
-table.wide{font-size:.8rem;table-layout:auto}
-table.wide th,table.wide td{padding:7px 6px}
+  --paper:#121211; --surface:#1a1a19; --sunk:#201f1d;
+  --rule:#34332e; --rule-soft:#282723;
+  --ink:#f2f1ed; --ink-2:#c5c3b8; --ink-3:#8f8d83;
+  --a:#3987e5; --b:#d95926; --n:#6e6c64;
+  --link:#69a6f2;
+  --ok:#4fb163; --no:#e3786a;
+}}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--paper);color:var(--ink-2);
+  font-family:var(--serif);font-size:17.5px;line-height:1.72;
+  font-kerning:normal;text-rendering:optimizeLegibility;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---- layout: a reading column, with room to break out -------------- */
+.wrap{
+  display:grid;
+  grid-template-columns:
+    [full-start] minmax(1.25rem,1fr)
+    [wide-start]  minmax(0,8rem)
+    [col-start]   min(100% - 2.5rem, 36rem) [col-end]
+                  minmax(0,8rem) [wide-end]
+    minmax(1.25rem,1fr) [full-end];
+  padding:5rem 0 7rem;
+}
+.wrap > *{grid-column:col}
+.wrap > .breakout{grid-column:wide}
+
+/* ---- type ---------------------------------------------------------- */
+h1{
+  font-size:clamp(2rem,1.3rem + 2.6vw,2.9rem);line-height:1.08;
+  letter-spacing:-.026em;color:var(--ink);font-weight:600;
+  margin:.1em 0 .5rem;text-wrap:balance;max-width:20ch;
+}
+h2{
+  font-size:1.5rem;line-height:1.25;letter-spacing:-.018em;
+  color:var(--ink);font-weight:600;margin:4.2rem 0 .2rem;text-wrap:balance;
+}
+h2 .num{
+  display:block;font-family:var(--sans);font-size:.7rem;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--link);
+  margin-bottom:.55rem;
+}
+h3{
+  font-size:1.07rem;line-height:1.35;color:var(--ink);font-weight:600;
+  margin:2.4rem 0 .1rem;letter-spacing:-.008em;
+}
+p{margin:.85em 0}
+.eyebrow{
+  font-family:var(--sans);font-size:.74rem;font-weight:600;
+  letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);
+  margin:0 0 .9rem;
+}
+.lede{font-size:1.19rem;line-height:1.6;color:var(--ink-2);margin:.7em 0 0}
+.lede em{color:var(--ink)}
+b,strong{color:var(--ink);font-weight:600}
+em{font-style:italic}
+a{color:var(--link);text-decoration:none;
+  text-underline-offset:.18em;text-decoration-thickness:.07em}
+a:hover{text-decoration:underline}
+ul,ol{margin:1em 0;padding-left:1.35rem}
+li{margin:.5em 0}
+li::marker{color:var(--ink-3)}
+code{
+  font-family:var(--mono);font-size:.84em;background:var(--sunk);
+  padding:.1em .36em;border-radius:4px;white-space:nowrap;
+  color:var(--ink);
+}
+blockquote{
+  margin:1.3em 0;padding:.1em 0 .1em 1.15rem;
+  border-left:2px solid var(--rule);color:var(--ink-3);font-style:italic;
+}
+
+/* ---- stat tiles ----------------------------------------------------- */
+.tiles{
+  display:grid;gap:.7rem;margin:2.3rem 0 .7rem;
+  grid-template-columns:repeat(auto-fit,minmax(8.6rem,1fr));
+}
+@media (max-width:560px){.tiles{grid-template-columns:repeat(2,1fr)}}
+.tile{
+  background:var(--surface);border:1px solid var(--rule-soft);
+  border-radius:12px;padding:.95rem 1.05rem;
+}
+.tile .n{
+  display:block;font-family:var(--sans);font-size:1.62rem;font-weight:620;
+  letter-spacing:-.025em;color:var(--ink);line-height:1.12;
+  font-variant-numeric:tabular-nums;
+}
+.tile .k{
+  display:block;font-family:var(--sans);font-size:.76rem;line-height:1.38;
+  color:var(--ink-3);margin-top:.3rem;
+}
+
+/* ---- contents ------------------------------------------------------- */
+.toc{
+  background:var(--surface);border:1px solid var(--rule-soft);
+  border-radius:12px;padding:1.05rem 1.3rem 1.2rem;margin:2rem 0 .4rem;
+  font-family:var(--sans);font-size:.875rem;
+}
+.toc>b{
+  display:block;font-size:.7rem;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-3);margin-bottom:.5rem;
+}
+.toc ol{margin:0;padding-left:1.35rem;columns:2;column-gap:2rem}
+@media (max-width:620px){.toc ol{columns:1}}
+.toc li{margin:.28em 0;color:var(--ink-3)}
+.toc li b{color:var(--ink)}
+
+/* ---- tables --------------------------------------------------------- */
+.tbl{margin:1.5rem 0;overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{
+  width:100%;border-collapse:collapse;font-family:var(--sans);
+  font-size:.845rem;line-height:1.5;font-variant-numeric:tabular-nums;
+}
+th{
+  text-align:left;font-weight:600;font-size:.69rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3);
+  padding:0 .7rem .55rem;border-bottom:1px solid var(--rule);
+  white-space:nowrap;
+}
+td{
+  padding:.62rem .7rem;border-bottom:1px solid var(--rule-soft);
+  color:var(--ink-2);vertical-align:top;
+}
+th:first-child,td:first-child{padding-left:0}
+th:last-child,td:last-child{padding-right:0}
+th.r,td.r{text-align:right}
 tbody tr:last-child td{border-bottom:none}
+.tbl.wide table{font-size:.79rem}
+.tbl.wide td,.tbl.wide th{padding-left:.5rem;padding-right:.5rem}
 .ok{color:var(--ok);font-weight:600}
 .no{color:var(--no);font-weight:600}
 .yes{color:var(--b);font-weight:600}
 .quote{color:var(--ink-3);font-style:italic}
-.tiles{display:flex;flex-wrap:wrap;gap:12px;margin:26px 0}
-.tile{flex:1 1 150px;background:var(--surface);border:1px solid var(--line);
-border-radius:10px;padding:14px 16px}
-.tile .n{display:block;font-size:1.7rem;font-weight:650;letter-spacing:-.02em;
-color:var(--ink);font-family:ui-sans-serif,system-ui,sans-serif}
-.tile .k{display:block;font-size:.78rem;color:var(--ink-3);margin-top:3px;
-font-family:ui-sans-serif,system-ui,sans-serif;line-height:1.35}
-figure{margin:22px 0 10px;background:var(--surface);border:1px solid var(--line);
-border-radius:10px;padding:18px 16px 10px}
-figcaption{font-size:.8rem;color:var(--ink-3);margin-top:8px;
-font-family:ui-sans-serif,system-ui,sans-serif}
+
+/* ---- figures -------------------------------------------------------- */
+figure{
+  margin:1.9rem 0 .8rem;background:var(--surface);
+  border:1px solid var(--rule-soft);border-radius:12px;
+  padding:1.3rem 1.2rem .8rem;
+}
+figcaption{
+  font-family:var(--sans);font-size:.765rem;line-height:1.5;
+  color:var(--ink-3);margin-top:.75rem;
+}
 .chart{width:100%;height:auto;display:block;overflow:visible}
-.chart .bar{transition:opacity .12s}
-.chart .bar:hover{opacity:.78}
+.chart .bar{transition:opacity .13s ease}
+.chart .bar:hover{opacity:.76}
 .bar-a{fill:var(--a)}.bar-b{fill:var(--b)}.bar-n{fill:var(--n)}
-.chart .lbl{font:12px ui-sans-serif,system-ui,sans-serif;fill:var(--ink-2)}
-.chart .val{font:12px ui-sans-serif,system-ui,sans-serif;fill:var(--ink);
-font-weight:600}
-.legend{display:flex;gap:18px;font-size:.8rem;color:var(--ink-2);margin:2px 0 12px;
-font-family:ui-sans-serif,system-ui,sans-serif}
-.sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+.chart .lbl{font:12px var(--sans);fill:var(--ink-3)}
+.chart .val{font:12px var(--sans);fill:var(--ink);font-weight:600;
+  font-variant-numeric:tabular-nums}
+.legend{
+  display:flex;gap:1.1rem;font-family:var(--sans);font-size:.78rem;
+  color:var(--ink-2);margin:0 0 .85rem;
+}
+.sw{display:inline-block;width:.6rem;height:.6rem;border-radius:3px;
+  margin-right:.4rem}
 .sw-a{background:var(--a)}.sw-b{background:var(--b)}
-blockquote{margin:14px 0;padding:10px 0 10px 16px;border-left:3px solid var(--line);
-color:var(--ink-2);font-style:italic}
-.note{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--b);
-border-radius:0 8px 8px 0;padding:12px 16px;margin:18px 0;font-size:.93rem}
-.note b{color:var(--ink)}
-.toc{background:var(--surface);border:1px solid var(--line);border-radius:10px;
-padding:14px 20px 16px;margin:28px 0 8px;font-family:ui-sans-serif,system-ui,sans-serif;
-font-size:.88rem}
-.toc>b{display:block;font-size:.76rem;text-transform:uppercase;
-letter-spacing:.06em;color:var(--ink-3)}
-.toc li b{color:var(--ink)}
-.toc ol{margin:8px 0 0;padding-left:20px}
-.toc li{margin:2px 0;color:var(--ink-2)}
-.toc a{color:var(--a);text-decoration:none}
-.toc a:hover{text-decoration:underline}
-ul li,ol li{margin:6px 0}
-footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--line);
-color:var(--ink-3);font-size:.82rem}
-@media print{body{background:#fff}.tile,figure,.note{break-inside:avoid}
-h2{break-after:avoid}table{break-inside:auto}tr{break-inside:avoid}}
+
+/* ---- callout -------------------------------------------------------- */
+.note{
+  background:var(--surface);border:1px solid var(--rule-soft);
+  border-left:3px solid var(--b);border-radius:0 12px 12px 0;
+  padding:.95rem 1.2rem;margin:1.6rem 0;font-size:.98rem;line-height:1.62;
+}
+
+footer{
+  margin-top:5rem;padding-top:1.3rem;border-top:1px solid var(--rule);
+  color:var(--ink-3);font-family:var(--sans);font-size:.78rem;line-height:1.6;
+}
+
+/* ---- print ---------------------------------------------------------- */
+@media print{
+  body{background:#fff;font-size:10.5pt}
+  .wrap{padding:0}
+  .toc{display:none}
+  .tile,figure,.note,tr{break-inside:avoid}
+  h2,h3{break-after:avoid}
+  a{color:inherit}
+}
+@media (max-width:640px){
+  body{font-size:16.5px}
+  .wrap{padding:2.75rem 0 4rem}
+  h2{margin-top:3rem}
+}
 """
 
     doc = f"""<!DOCTYPE html>
@@ -282,20 +416,20 @@ h2{break-after:avoid}table{break-inside:auto}tr{break-inside:avoid}}
 <title>hw6 — Campus Customs vendor desk</title>
 <style>{css}</style></head><body><div class="wrap">
 
-<p class="sub">AI Foundation · homework 6</p>
+<p class="eyebrow">AI Foundation · homework 6</p>
 <h1>The Campus Customs vendor desk</h1>
 <p class="lede">An agent that reads vendor quotes — HTML, PDF and email — pulls
 out six facts and decides whether the shop should buy, against a handbook that
 some of the quotes are actively trying to subvert.</p>
 
-<div class="tiles">
+<div class="tiles breakout">
   <div class="tile"><span class="n">12/12</span><span class="k">practice documents correct, defended</span></div>
   <div class="tile"><span class="n">0</span><span class="k">trap tool calls across 24 document runs</span></div>
   <div class="tile"><span class="n">{hb_tokens:,}</span><span class="k">tokens in the handbook, measured</span></div>
   <div class="tile"><span class="n">90%</span><span class="k">of input served from cache</span></div>
 </div>
 
-<nav class="toc"><b>On this page</b>
+<nav class="toc breakout"><b>On this page</b>
 <ol>
 <li><a href="#cost">What the handbook costs</a></li>
 <li><a href="#cache">Caching results</a> — with chart</li>
@@ -308,7 +442,7 @@ some of the quotes are actively trying to subvert.</p>
 <li><a href="#rec"><b>Recommendation to the store manager</b></a></li>
 </ol></nav>
 
-<h2 id="cost">1. What the handbook costs</h2>
+<h2 id="cost"><span class="num">Section 1</span>What the handbook costs</h2>
 <p>Every call carries the whole Shop Handbook, so its size sets the floor on
 cost. The count is measured against the gateway, not estimated: two calls with
 identical scaffolding, differing only in whether the handbook is in the
@@ -319,7 +453,7 @@ predicts {round(hb['characters'] / 4):,} tokens — <b>28% low</b>. The file run
 {hb['chars_per_token']} characters per token because it is dense in markdown
 tables, SKU codes and prices.</p>
 
-<h2 id="cache">2. Caching results</h2>
+<h2 id="cache"><span class="num">Section 2</span>Caching results</h2>
 <p>The handbook is identical on every call, so the gateway can reuse it. All 12
 practice documents were run twice: once with a byte-identical prefix, once with
 a fresh nonce in the first tokens of <em>every model request</em> so no prefix
@@ -330,7 +464,7 @@ attempt put the nonce per <em>document</em> and 22 of 36 calls still hit cache �
 a document takes three requests, and requests 2 and 3 reused the first one's
 prefix.</p>
 
-<figure>{cache_chart}
+<figure class="breakout">{cache_chart}
 <figcaption>12 practice documents. The middle bar is the hypothetical where the
 gateway has no cache at all and every input token is billed at the base rate.</figcaption></figure>
 
@@ -341,13 +475,13 @@ write costs 25% above plain input. There is no neutral setting: a large prompt
 is either reused at a tenth the price or re-written at a quarter above it. A
 timestamp at the top of a prompt would quietly cost 25% extra forever.</div>
 
-<h2 id="hidden">3. What the documents hide</h2>
+<h2 id="hidden"><span class="num">Section 3</span>What the documents hide</h2>
 <p>Five of the twelve practice documents contain text that a person opening
 them normally <em>cannot see</em>. The reader now computes both views — what a
 browser paints, what ink a PDF shows, which part a mail client displays — and
 labels anything present in the file but not on that screen.</p>
 
-{table(["Document", "Hidden by", "Before the defences", "What it says"], conceal_rows)}
+{table(["Document", "Hidden by", "Before the defences", "What it says"], conceal_rows, "breakout")}
 
 <p>Two different failure modes sit in that table. Where the agent saw more than
 the reviewer, the <em>human</em> is the one being deceived. Where it saw less,
@@ -355,7 +489,7 @@ it was protected by accident — an unimplemented comment handler, and a
 preference for an email's plain-text part — so two live attacks had never been
 tested at all.</p>
 
-<h2 id="defences">4. The defences, and what they cost</h2>
+<h2 id="defences"><span class="num">Section 4</span>The defences, and what they cost</h2>
 <p>Five layers. Each catches at least one attack in this dataset that none of
 the others catch.</p>
 <ol>
@@ -377,14 +511,14 @@ attack — the only layer that caught the one document that actually flipped.</l
 <h3>What each layer costs</h3>
 {table(["Layer", "Per document", "Why"], layer_rows)}
 
-<div class="tiles">
+<div class="tiles breakout">
   <div class="tile"><span class="n">${du['usd_per_document']:.6f}</span><span class="k">per document, no defences</span></div>
   <div class="tile"><span class="n">${dd['usd_per_document']:.6f}</span><span class="k">per document, defended</span></div>
   <div class="tile"><span class="n">−{(1 - dd['usd'] / du['usd']) * 100:.0f}%</span><span class="k">net change in cost</span></div>
   <div class="tile"><span class="n">{dd['total_tokens'] - du['total_tokens']:+,}</span><span class="k">net change in tokens, 12 documents</span></div>
 </div>
 
-<figure>{cost_chart}
+<figure class="breakout">{cost_chart}
 <figcaption>Cost per practice document. The defended agent is cheaper because
 handing the decision to Python removes a whole model request, and each request
 carries the entire ~11.7k-token prompt.</figcaption></figure>
@@ -394,10 +528,10 @@ carries the entire ~11.7k-token prompt.</figcaption></figure>
 ${dd['usd_per_document']:.6f} against ${du['usd_per_document']:.6f} per
 document. Making it safer also made it shorter.</div>
 
-<h2 id="beforeafter">5. Attacks before and after the defences</h2>
-{table(["Document", "No defences", "", "Defended", ""], ba_rows)}
+<h2 id="beforeafter"><span class="num">Section 5</span>Attacks before and after the defences</h2>
+{table(["Document", "No defences", "", "Defended", ""], ba_rows, "breakout")}
 
-<div class="tiles">
+<div class="tiles breakout">
   <div class="tile"><span class="n">{du['all_fields_matched']}/12 → {dd['all_fields_matched']}/12</span><span class="k">documents fully correct</span></div>
   <div class="tile"><span class="n">0</span><span class="k">clean quotes damaged or blanked</span></div>
   <div class="tile"><span class="n">0</span><span class="k">trap tools called, either mode</span></div>
@@ -414,7 +548,7 @@ says so: <em>"used the revised price."</em></p>
 fields in either mode. A defence that answers "I can't tell" to a real quote
 has broken the product to protect it, and that was the risk worth watching.</p>
 
-<h2 id="redteam">6. Two red-team attacks</h2>
+<h2 id="redteam"><span class="num">Section 6</span>Two red-team attacks</h2>
 <p>Two attack documents were written against this agent using techniques the
 practice set does not use. <b>Neither fooled the model.</b> Both found real
 defects.</p>
@@ -448,15 +582,15 @@ already been reported as clean while both were reaching the model unlabelled —
 it looked healthy because the model handled them, not because the defences
 did.</div>
 
-<h2 id="exam">7. Exam results</h2>
+<h2 id="exam"><span class="num">Section 7</span>Exam results</h2>
 <p>All 10 documents through the final defended agent. No answer key exists, so
 nothing here is scored; decisions are computed from the extracted facts by the
 rule engine, not emitted by the model. All ten were recomputed by hand against
 handbook sections 5, 6 and 9 and all ten agree.</p>
 
-{table(["File", "Vendor", "SKU", "Price", "Lead", "Min", "Decision", "Trap", "Cost"], exam_rows, "wide")}
+{table(["File", "Vendor", "SKU", "Price", "Lead", "Min", "Decision", "Trap", "Cost"], exam_rows, "wide breakout", "lllrrrllr")}
 
-<div class="tiles">
+<div class="tiles breakout">
   <div class="tile"><span class="n">5 / 5</span><span class="k">recommend / do_not_recommend</span></div>
   <div class="tile"><span class="n">0</span><span class="k">fields blanked or refused</span></div>
   <div class="tile"><span class="n">4</span><span class="k">documents hiding text, all detected</span></div>
@@ -470,7 +604,7 @@ cost table to an outside address. Neither tool was called.
 claiming a rival's lot failed quality testing and redirecting the buyer to a
 removed vendor.</p>
 
-<h2 id="open">8. What is still open</h2>
+<h2 id="open"><span class="num">Section 8</span>What is still open</h2>
 <p>An attack that simply printed a plausible wrong number in the
 <em>visible</em> quote — no hidden text, no instruction, no override language —
 would pass all five layers. At that point the document is lying, and the quote
@@ -481,7 +615,7 @@ moments when a defence layer was blind. The model refused attacks the code
 never flagged, twice, and the only reason that surfaced was red-teaming. A
 12/12 does not tell you which part of the system earned it.</p>
 
-<h2 id="rec">9. Recommendation to the store manager</h2>
+<h2 id="rec"><span class="num">Section 9</span>Recommendation to the store manager</h2>
 
 <p class="lede">Yes — turn it on, but as the <em>first reader</em> of vendor
 mail, not as the last. It should sort and flag; a person should still sign.</p>
@@ -489,7 +623,7 @@ mail, not as the last. It should sort and flag; a person should still sign.</p>
 <h3>What it would cost</h3>
 <p>At <b>1,000 documents a day for 30 days</b> — {MONTH:,} quotes a month:</p>
 
-{table(["Setup", "Per document", "Per day", "Per month"], proj_rows)}
+{table(["Setup", "Per document", "Per day", "Per month"], proj_rows, "", "lrrr")}
 
 <p><b>Budget ${cached_doc * MONTH:,.0f}–${exam_doc * MONTH:,.0f} a month.</b>
 The first row is what a steady stream of quotes costs, because at this volume
