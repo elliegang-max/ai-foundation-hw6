@@ -73,6 +73,12 @@ scored partly on cost.
 
 ### Prompt 4 — 2026-10-19
 
+> Create AI_prompts.md at the start of the assignment and keep it updated as
+> you work. This file is the log of i communicated to you. Make one section for
+> each problem and each section should include
+
+followed by a pasted list:
+
 > The problem number and title
 > * At least one prompt you typed, in your own words as much as possible
 > * One follow-up prompt if you needed it (and one sentence on what was lacking
