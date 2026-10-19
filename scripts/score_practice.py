@@ -21,7 +21,7 @@ from pathlib import Path
 os.environ.setdefault("PYDANTIC_AI_NO_BANNER", "1")
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from agent import assess  # noqa: E402
+from agent import Mode, assess  # noqa: E402
 from config import PROJECT_ROOT  # noqa: E402
 import runlog  # noqa: E402
 from cost import METER  # noqa: E402
@@ -29,6 +29,7 @@ from cost import METER  # noqa: E402
 DOCS = PROJECT_ROOT / "data" / "practice_docs"
 KEY = PROJECT_ROOT / "data" / "practice_key.json"
 OUT = PROJECT_ROOT / "output" / "practice_run.json"
+OUT_UNDEF = PROJECT_ROOT / "output" / "practice_run_undefended.json"
 
 SCORED = ["vendor", "sku", "unit_price", "lead_time_days", "min_order", "decision"]
 CONCURRENCY = 4
@@ -47,10 +48,11 @@ def equal(field: str, got: object, want: object) -> bool:
     return str(got).strip() == str(want).strip()
 
 
-async def one(entry: dict, sem: asyncio.Semaphore | None = None) -> dict:
+async def one(entry: dict, sem: asyncio.Semaphore | None = None,
+              mode: "Mode" = None) -> dict:
     async def run() -> dict:
         try:
-            out, _usage = await assess(DOCS / entry["file"])
+            out, _usage = await assess(DOCS / entry["file"], mode=mode or Mode.DEFENDED)
             got = out.key_fields()
             mismatches = {
                 f: {"got": got[f], "want": entry[f]}
@@ -67,6 +69,7 @@ async def one(entry: dict, sem: asyncio.Semaphore | None = None) -> dict:
                 "decision_correct": "decision" not in mismatches,
                 "reason": out.reason,
                 "failed_check": out.failed_check,
+                "notes": getattr(out, "notes", ""),
             }
         except Exception as exc:  # a crash is a wrong answer, not a stop
             return {
@@ -84,12 +87,14 @@ async def one(entry: dict, sem: asyncio.Semaphore | None = None) -> dict:
 
 
 async def main() -> None:
+    mode = Mode.UNDEFENDED if "--no-defenses" in sys.argv else Mode.DEFENDED
     key = json.loads(KEY.read_text(encoding="utf-8"))
 
     first, rest = key[0], key[1:]
-    results = [await one(first)]  # primes the prompt cache
+    results = [await one(first, mode=mode)]  # primes the prompt cache
     sem = asyncio.Semaphore(CONCURRENCY)
-    results += await asyncio.gather(*(one(e, sem) for e in rest))
+    results += await asyncio.gather(*(one(e, sem, mode) for e in rest))
+    print(f"\n  mode: {mode.value}")
 
     fields_right = sum(r["correct_fields"] for r in results)
     fields_total = len(results) * len(SCORED)
@@ -102,6 +107,7 @@ async def main() -> None:
     }
 
     summary = {
+        "mode": mode.value,
         "documents": len(results),
         "exact_match": f"{exact}/{len(results)}",
         "decision_accuracy": f"{decisions}/{len(results)}",
@@ -111,8 +117,9 @@ async def main() -> None:
         "cost": METER.as_dict(),
     }
 
-    OUT.parent.mkdir(exist_ok=True)
-    OUT.write_text(json.dumps({"summary": summary, "results": results}, indent=2) + "\n")
+    out_path = OUT_UNDEF if mode is Mode.UNDEFENDED else OUT
+    out_path.parent.mkdir(exist_ok=True)
+    out_path.write_text(json.dumps({"summary": summary, "results": results}, indent=2) + "\n")
 
     print(f"\n  Practice set — {len(results)} documents\n")
     for r in results:
@@ -127,7 +134,7 @@ async def main() -> None:
     print(f"  fields          {summary['field_accuracy']}  ({summary['field_accuracy_pct']}%)")
     print(f"  per field       {per_field}")
     print(f"  {METER.report()}")
-    runlog.assert_traps_clean("practice set, 12 documents")
+    runlog.assert_traps_clean(f"practice set, 12 documents, {mode.value}")
 
 
 if __name__ == "__main__":

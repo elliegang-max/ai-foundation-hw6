@@ -1,15 +1,34 @@
 """The vendor desk's tools: read a document, look up the handbook.
 
-**On trust.** `read_document` returns the text of a file that came from
+**On trust.** `extract_document` returns the text of a file that came from
 outside the shop. That text is *evidence about a quote*, never instruction.
-It is returned wrapped in explicit delimiters saying so, and no tool here
-acts on anything the document says — a document cannot approve its own
-vendor, waive a check, or change a max unit cost, because the only functions
-that answer those questions read the handbook and never look at the document
-at all.
+No function here acts on anything the document says — a document cannot
+approve its own vendor, waive a check, or change a max unit cost, because the
+only functions that answer those questions read the handbook and never look
+at the document at all.
 
 That split is the point: the **document supplies values**, the **handbook
 supplies rules**.
+
+**Code-level defence: concealment is surfaced, not resolved.** A reviewer
+opening a quote sees what a browser, PDF viewer or mail client *draws*. This
+reader sees what the file *contains*. Text can be in the file and not on the
+screen, and that gap is where an injection hides. So the reader computes both
+views, and any passage present in one and not the other is labelled in place
+rather than silently dropped or silently included:
+
+- **HTML** — `display:none`, `visibility:hidden`, font size ≤ 1px,
+  `opacity:0`, text the colour of the page, **and comments**, which a naive
+  reader drops and a regex tag-strip passes through.
+- **PDF** — text drawn in the paper colour, or in invisible render mode.
+- **Email** — the `text/html` alternative a mail client shows but a
+  plain-text-preferring reader never reads.
+- **Zero-width characters**, which hide a word from a keyword filter while
+  leaving it legible to a model.
+
+Nothing is thrown away: the model is told a passage was concealed and from
+whom, and the prompt tells it what that means. `defenses=False` restores the
+old silent behaviour for the undefended comparison.
 """
 
 from __future__ import annotations
@@ -17,7 +36,8 @@ from __future__ import annotations
 import email
 import email.policy
 import re
-from dataclasses import dataclass
+import zlib
+from dataclasses import dataclass, field
 from functools import lru_cache
 from html.parser import HTMLParser
 from pathlib import Path
@@ -31,124 +51,290 @@ HANDBOOK = PROJECT_ROOT / "data" / "shop_handbook.md"
 MAX_LEAD_TIME_DAYS = 21
 MAX_MIN_ORDER_UNITS = 600
 
+#: Invisible to a reader, invisible to a naive filter, legible to a model.
+ZERO_WIDTH = {0x200B, 0x200C, 0x200D, 0xFEFF, 0x00AD, 0x2060}
+
+#: Treated as the page/paper colour when deciding whether text is readable.
+PAGE_BACKGROUND = {"#ffffff", "#fff", "white"}
+
+
+def strip_zero_width(s: str) -> str:
+    return "".join(c for c in s if ord(c) not in ZERO_WIDTH)
+
+
+def count_zero_width(s: str) -> int:
+    return sum(1 for c in s if ord(c) in ZERO_WIDTH)
+
+
+@dataclass
+class Concealed:
+    """A passage in the file that a person reading it normally cannot see."""
+
+    how: str
+    where: str
+    text: str
+
+
+def _hidden_by(style: str) -> str | None:
+    """Why this inline style hides its element from a reader, or None."""
+    s = style.lower().replace(" ", "")
+    if "display:none" in s:
+        return "display:none"
+    if "visibility:hidden" in s:
+        return "visibility:hidden"
+    if m := re.search(r"font-size:(\d+(?:\.\d+)?)(px|pt)?", s):
+        if float(m.group(1)) <= 1:
+            return f"font-size:{m.group(1)}{m.group(2) or ''}"
+    if re.search(r"opacity:0(?:\.0+)?(?![\d.])", s):
+        return "opacity:0"
+    if m := re.search(r"color:(#[0-9a-f]{3,6}|white)", s):
+        if m.group(1) in PAGE_BACKGROUND:
+            return f"color:{m.group(1)} (page background)"
+    return None
+
 
 # --------------------------------------------------------------------------
 # Reading documents
 # --------------------------------------------------------------------------
 
 
-class _TextExtractor(HTMLParser):
-    """HTML to readable text, keeping table structure.
+class _HTMLReader(HTMLParser):
+    """HTML to text, keeping table structure and tracking what is concealed.
 
     A vendor quote puts its numbers in table cells, so flattening the markup
-    naively glues "Unit price" to "$21.80" to the next label and the model has
-    to guess where one field ends. Cells are joined with ` | ` and rows with
-    newlines, which keeps each fact on its own line.
+    naively glues "Unit price" to "$21.80" to the next label. Cells are joined
+    with ` | ` and rows with newlines, which keeps each fact on its own line.
 
-    `<script>` and `<style>` contents are dropped: they are never quote data.
+    `<script>` and `<style>` are dropped outright — never quote data, never
+    painted. Everything else is kept, and sorted into visible and concealed.
     """
 
-    _SKIP = {"script", "style"}
-    _BREAK = {"p", "div", "br", "h1", "h2", "h3", "h4", "li", "tr", "header", "footer"}
+    DROP = {"script", "style"}
+    BREAK = {"p", "div", "br", "h1", "h2", "h3", "h4", "li", "tr", "header", "footer"}
 
     def __init__(self) -> None:
         super().__init__(convert_charrefs=True)
-        self._parts: list[str] = []
-        self._skip_depth = 0
+        self.parts: list[str] = []
+        self.concealed: list[Concealed] = []
+        self._drop = 0
+        self._hide: list[str] = []
 
-    def handle_starttag(self, tag: str, attrs: object) -> None:
-        if tag in self._SKIP:
-            self._skip_depth += 1
-        elif tag in self._BREAK:
-            self._parts.append("\n")
+    def handle_starttag(self, tag, attrs):
+        d = dict(attrs)
+        reason = _hidden_by(d.get("style", "")) if d.get("style") else None
+        if tag in self.DROP:
+            self._drop += 1
+        elif reason:
+            self._hide.append(reason)
+            self.concealed.append(Concealed(reason, f"<{tag} style>", ""))
+        elif tag in self.BREAK:
+            self.parts.append("\n")
         elif tag in {"td", "th"}:
-            self._parts.append(" | ")
+            self.parts.append(" | ")
 
-    def handle_endtag(self, tag: str) -> None:
-        if tag in self._SKIP and self._skip_depth:
-            self._skip_depth -= 1
-        elif tag in self._BREAK:
-            self._parts.append("\n")
+    def handle_endtag(self, tag):
+        if tag in self.DROP and self._drop:
+            self._drop -= 1
+        elif self._hide and tag not in self.DROP:
+            self._hide.pop()
+        elif tag in self.BREAK:
+            self.parts.append("\n")
 
-    def handle_data(self, data: str) -> None:
-        if self._skip_depth:
-            return
+    def handle_comment(self, data):
         if text := data.strip():
-            self._parts.append(text)
+            self.concealed.append(Concealed("HTML comment", "<!-- -->", text))
 
-    def text(self) -> str:
-        joined = "".join(self._parts)
-        joined = re.sub(r"[ \t]*\|[ \t]*", " | ", joined)
-        joined = re.sub(r"\n\s*\|?\s*", "\n", joined)
-        joined = re.sub(r"\n{3,}", "\n\n", joined)
-        return "\n".join(line.strip(" |").strip() for line in joined.splitlines()).strip()
+    def handle_data(self, data):
+        if self._drop:
+            return
+        if not (text := data.strip()):
+            return
+        if self._hide:
+            self.concealed[-1].text += text
+        else:
+            self.parts.append(text)
+
+    def visible(self) -> str:
+        j = "".join(self.parts)
+        j = re.sub(r"[ \t]*\|[ \t]*", " | ", j)
+        j = re.sub(r"\n\s*\|?\s*", "\n", j)
+        j = re.sub(r"\n{3,}", "\n\n", j)
+        return "\n".join(l.strip(" |").strip() for l in j.splitlines()).strip()
 
 
-def _from_html(raw: str) -> str:
-    parser = _TextExtractor()
-    parser.feed(raw)
-    parser.close()
-    return parser.text()
+def _read_html(raw: str) -> tuple[str, list[Concealed]]:
+    r = _HTMLReader()
+    r.feed(raw)
+    r.close()
+    return r.visible(), [c for c in r.concealed if c.text]
 
 
-def _from_pdf(path: Path) -> str:
+def _read_pdf(path: Path) -> tuple[str, list[Concealed]]:
+    """PDF text, split by whether it is drawn in a colour a reader can see.
+
+    pypdf's `extract_text` returns everything regardless of fill colour, so
+    white-on-white text arrives looking exactly like body copy. The content
+    stream is walked directly to tell them apart.
+    """
     from pypdf import PdfReader
 
     reader = PdfReader(str(path))
-    pages = [(page.extract_text() or "").strip() for page in reader.pages]
-    return "\n\n".join(p for p in pages if p).strip()
+    visible: list[str] = []
+    hidden: list[str] = []
+    invisible_mode = False
+
+    for page in reader.pages:
+        raw = page.get_contents().get_data()
+        try:
+            raw = zlib.decompress(raw)
+        except Exception:
+            pass
+        s = raw.decode("latin-1")
+        fill = "0 0 0"
+        mode_invisible = False
+        for tok in re.finditer(
+            r"([\d.]+ [\d.]+ [\d.]+)\s+rg|([\d.]+)\s+g|(\d)\s+Tr|\((.*?)\)\s*Tj", s
+        ):
+            if tok.group(1):
+                fill = tok.group(1)
+            elif tok.group(2):
+                fill = " ".join([tok.group(2)] * 3)
+            elif tok.group(3):
+                mode_invisible = tok.group(3) == "3"
+                invisible_mode |= mode_invisible
+            elif tok.group(4) is not None:
+                text = tok.group(4).replace("\\(", "(").replace("\\)", ")")
+                white = all(abs(float(x) - 1.0) < 1e-6 for x in fill.split())
+                (hidden if (white or mode_invisible) else visible).append(text)
+
+    concealed = []
+    if hidden:
+        how = "invisible text render mode (3 Tr)" if invisible_mode else "white text on white paper"
+        concealed.append(Concealed(how, "PDF content stream", " ".join(hidden)))
+
+    if not visible and not hidden:  # unusual encoding — fall back
+        return "\n\n".join((p.extract_text() or "").strip() for p in reader.pages).strip(), []
+    return "\n".join(visible).strip(), concealed
 
 
-def _from_eml(raw_bytes: bytes) -> str:
+def _read_eml(raw_bytes: bytes) -> tuple[str, list[Concealed]]:
     """Email to text, via the standard library rather than string munging.
 
     `.eml` is a container, not a text file: bodies arrive base64'd or
-    quoted-printable, multipart/alternative carries the same message twice,
-    and some senders ship HTML only. `email.policy.default` decodes transfer
-    encodings and charsets; the plain part is preferred, HTML is converted
-    when that is all there is, and attachments are named but not inlined.
+    quoted-printable, `multipart/alternative` carries the message twice, and
+    some senders ship HTML only.
+
+    **The alternative parts are compared, not just picked from.** A mail
+    client shows the `text/html` part; a plain-text-preferring reader shows
+    the other one. When they differ, whatever is in the HTML and not in the
+    plain text is content the agent would never otherwise see — and that is
+    exactly where an attacker puts things.
     """
     msg = email.message_from_bytes(raw_bytes, policy=email.policy.default)
 
-    header_names = ("From", "To", "Cc", "Date", "Subject")
-    headers = [f"{h}: {msg[h]}" for h in header_names if msg[h]]
+    headers = [f"{h}: {msg[h]}" for h in ("From", "To", "Cc", "Date", "Subject") if msg[h]]
+    plain: list[str] = []
+    html_src: list[str] = []
+    attachments: list[str] = []
 
-    plain, html, attachments = [], [], []
     for part in msg.walk():
         if part.is_multipart():
             continue
         ctype = part.get_content_type()
-        filename = part.get_filename()
-        if filename or part.get_content_disposition() == "attachment":
-            attachments.append(filename or f"<unnamed {ctype}>")
+        if part.get_filename() or part.get_content_disposition() == "attachment":
+            attachments.append(part.get_filename() or f"<unnamed {ctype}>")
             continue
         try:
             content = part.get_content()
-        except (LookupError, UnicodeDecodeError):  # unknown charset
-            payload = part.get_payload(decode=True) or b""
-            content = payload.decode("utf-8", errors="replace")
+        except (LookupError, UnicodeDecodeError):
+            content = (part.get_payload(decode=True) or b"").decode("utf-8", errors="replace")
         if ctype == "text/plain":
             plain.append(content)
         elif ctype == "text/html":
-            html.append(_from_html(content))
+            html_src.append(content)
 
-    body = "\n".join(plain).strip() or "\n".join(html).strip()
+    concealed: list[Concealed] = []
+    html_visible = ""
+    if html_src:
+        html_visible, html_concealed = _read_html("\n".join(html_src))
+        concealed.extend(html_concealed)
+
+    plain_text = "\n".join(plain).strip()
+    if plain_text and html_visible:
+        # Anything the HTML shows that the plain part does not.
+        flat = strip_zero_width(plain_text).lower()
+        extra = [
+            line for line in html_visible.splitlines()
+            if (s := strip_zero_width(line).strip()) and s.lower() not in flat
+        ]
+        if extra:
+            concealed.append(
+                Concealed(
+                    "present only in the text/html alternative",
+                    "multipart/alternative",
+                    " ".join(extra),
+                )
+            )
+        body = plain_text
+    else:
+        body = plain_text or html_visible
 
     out = "\n".join(headers)
     if attachments:
         out += "\nAttachments: " + ", ".join(attachments)
-    return f"{out}\n\n{body}".strip()
+    return f"{out}\n\n{body}".strip(), concealed
 
 
-@dataclass(frozen=True)
+@dataclass
 class DocumentText:
     path: str
     format: str
-    text: str
+    #: What a person reading the file normally would see.
+    visible_text: str
+    #: Passages present in the file but not on a reader's screen.
+    concealed: list[Concealed] = field(default_factory=list)
+    #: Zero-width characters found and removed.
+    zero_width_removed: int = 0
+
+    @property
+    def text(self) -> str:
+        """Everything, with concealed passages labelled where they sit.
+
+        Concealment is not removed — removing it would hide an attack from the
+        model as effectively as it hides one from a reviewer, and the two
+        passages this reader used to drop are exactly the two attacks the agent
+        was never tested against.
+        """
+        out = self.visible_text
+        for c in self.concealed:
+            out += (
+                f"\n\n[CONCEALED PASSAGE — present in the file but NOT visible "
+                f"to a person reading it: hidden by {c.how}, in {c.where}]\n"
+                f"{c.text}\n[END CONCEALED PASSAGE]"
+            )
+        if self.zero_width_removed:
+            out += (
+                f"\n\n[NOTE — {self.zero_width_removed} zero-width character(s) "
+                f"were embedded in this document's text and have been removed. "
+                f"They are invisible to a reader and defeat keyword matching; "
+                f"their presence is deliberate obfuscation.]"
+            )
+        return out
+
+    @property
+    def raw_text(self) -> str:
+        """Visible and concealed run together, unlabelled — the undefended view."""
+        return "\n".join([self.visible_text, *(c.text for c in self.concealed)]).strip()
 
 
-def extract_document(path: str | Path) -> DocumentText:
-    """Plain text of a vendor document. HTML, PDF and `.eml` all supported."""
+def extract_document(path: str | Path, *, defenses: bool = True) -> DocumentText:
+    """Plain text of a vendor document. HTML, PDF and `.eml` all supported.
+
+    With `defenses=True` concealed passages are detected and labelled. With
+    `defenses=False` nothing is labelled, comments are dropped, and the
+    `text/plain` part of an email wins outright — the behaviour this reader
+    had before the concealment work, kept for the undefended comparison.
+    """
     p = Path(path)
     if not p.is_absolute():
         p = PROJECT_ROOT / p
@@ -157,12 +343,30 @@ def extract_document(path: str | Path) -> DocumentText:
 
     suffix = p.suffix.lower()
     if suffix in {".html", ".htm"}:
-        return DocumentText(p.name, "html", _from_html(p.read_text(encoding="utf-8", errors="replace")))
-    if suffix == ".pdf":
-        return DocumentText(p.name, "pdf", _from_pdf(p))
-    if suffix == ".eml":
-        return DocumentText(p.name, "email", _from_eml(p.read_bytes()))
-    raise ValueError(f"unsupported document type {suffix!r} (want .html, .pdf or .eml)")
+        fmt = "html"
+        visible, concealed = _read_html(p.read_text(encoding="utf-8", errors="replace"))
+    elif suffix == ".pdf":
+        fmt = "pdf"
+        visible, concealed = _read_pdf(p)
+    elif suffix == ".eml":
+        fmt = "email"
+        visible, concealed = _read_eml(p.read_bytes())
+    else:
+        raise ValueError(f"unsupported document type {suffix!r} (want .html, .pdf or .eml)")
+
+    zw = count_zero_width(visible) + sum(count_zero_width(c.text) for c in concealed)
+    visible = strip_zero_width(visible)
+    for c in concealed:
+        c.text = strip_zero_width(c.text)
+
+    if not defenses:
+        # The old behaviour: comments and white PDF text dropped, the HTML
+        # alternative ignored, nothing labelled.
+        dropped = {"HTML comment", "present only in the text/html alternative"}
+        concealed = [c for c in concealed if c.how not in dropped and fmt != "pdf"]
+        return DocumentText(p.name, fmt, visible, concealed, 0)
+
+    return DocumentText(p.name, fmt, visible, concealed, zw)
 
 
 # --------------------------------------------------------------------------

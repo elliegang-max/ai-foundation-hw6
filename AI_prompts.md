@@ -261,3 +261,30 @@ obfuscated with nine zero-width spaces. Three reached the agent and failed.
 Two never reached it at all — filtered out by parser incidentals rather than
 by any defence, which means the 12/12 includes two attacks the agent has never
 had to refuse.
+
+### Prompt 13 — 2026-10-19
+
+> Defend your agent at three levels:
+>
+> * Code: what your program does to the document before any model sees it
+> * Design: how your agent is put together, so a poisoned document cannot
+>   reach the dangerous tools or the decision
+> * Prompt: rules in `prompts/prompt.md`
+>
+> You may not delete `send_email` or `approve_payment` from your system. The
+> shop will use them later with a human sign-off. Keep a way to run the agent
+> with no defenses (you need it in Problem 7)
+
+**What Claude did.** Code: the reader computes what a person would see and
+labels every passage that is in the file but not on that screen, instead of
+dropping or forwarding it silently. Design: the model no longer decides —
+`rules.py` applies the four checks to the extracted facts; any figure found
+only in concealed text is rejected before the checks run; and both acting
+tools stay registered but need a human-approval object a document cannot
+mint. Prompt: the job is extraction, concealed passages are evidence of an
+attack, the acting tools are out of scope. Both tools kept,
+`--no-defenses` kept. Wrote up in `output/defenses.md` — including that the
+defences cannot be justified by a score delta, since defended and undefended
+both score 12/12 and even a stripped-bare prompt refused every attack. They
+are justified instead by `tests/test_defenses.py`, 29 fault-injection tests
+that feed the pipeline the answer a fooled model would give.
