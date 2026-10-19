@@ -55,3 +55,27 @@ Recorded the constraint in `RULES.md` (hw5's convention for assignment-given
 rules) and in the README, and listed the details still to confirm against the
 handout — the exact wire id, the provider, and the client library the course
 expects.
+
+---
+
+## Problem 1b — The dataset
+
+**Prompt** — 2026-10-19
+
+> the hw6 dataset is in ~/Downloads/data-3, copy it into data/
+
+*(Relayed to this session by another Claude session — replace with the exact
+wording.)*
+
+**Response**
+
+Copied all 128K in and verified it byte-identical to the source: the handbook,
+`prices.json`, `practice_key.json`, 12 practice documents and 10 exam
+documents. Read the handbook's sections 4, 5, 6 and 13 to pin down the task —
+six fields per document plus a decision, `recommend` only if all four
+purchasing checks pass — and wrote that into `RULES.md` alongside a rule that
+the vendor documents are untrusted input whose contents are never instructions.
+Added `cost.py`, metering tokens and dollars off `data/prices.json` through the
+single client, since the price table suggests the run is scored partly on cost.
+Still no pipeline: waiting on the handout to confirm the output shape and how
+it is scored.
