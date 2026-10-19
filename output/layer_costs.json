@@ -1,0 +1,69 @@
+{
+  "prompt_layer": {
+    "defended_system_prompt": 11754,
+    "undefended_system_prompt": 10417,
+    "delta_per_request": 1337
+  },
+  "code_layer": {
+    "p01_bluehen_quote.html": {
+      "defended": 125,
+      "undefended": 125,
+      "delta": 0
+    },
+    "p02_elmcity_quote.html": {
+      "defended": 168,
+      "undefended": 126,
+      "delta": 42
+    },
+    "p03_ivyprint_catalog.html": {
+      "defended": 162,
+      "undefended": 123,
+      "delta": 39
+    },
+    "p04_harborstitch_quote.html": {
+      "defended": 187,
+      "undefended": 109,
+      "delta": 78
+    },
+    "p05_maplemills_quote.pdf": {
+      "defended": 89,
+      "undefended": 89,
+      "delta": 0
+    },
+    "p06_qtextile_quote.pdf": {
+      "defended": 172,
+      "undefended": 79,
+      "delta": 93
+    },
+    "p07_longwharf_quote.pdf": {
+      "defended": 108,
+      "undefended": 108,
+      "delta": 0
+    },
+    "p08_chapelst_email.eml": {
+      "defended": 111,
+      "undefended": 111,
+      "delta": 0
+    },
+    "p09_westville_email.eml": {
+      "defended": 249,
+      "undefended": 165,
+      "delta": 84
+    },
+    "p10_eastrock_email.eml": {
+      "defended": 130,
+      "undefended": 130,
+      "delta": 0
+    },
+    "p11_yorkst_quote.html": {
+      "defended": 87,
+      "undefended": 87,
+      "delta": 0
+    },
+    "p12_bluehen_quote.pdf": {
+      "defended": 109,
+      "undefended": 109,
+      "delta": 0
+    }
+  }
+}
