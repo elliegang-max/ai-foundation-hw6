@@ -31,13 +31,13 @@ request**, so no stored prefix can match.
 
 | Setup | Model calls | Calls showing `cache_read_tokens` > 0 | Verdict |
 | --- | --- | --- | --- |
-| Uncached | 36 | **0** | valid — nothing was reused |
-| Cached | 36 | **34** | cache in use |
+| Uncached | 24 | **0** | valid — nothing was reused |
+| Cached | 24 | **24** | cache in use |
 
-The uncached run reads **zero** cached tokens across all 36
-calls. Its input token total (449,839) is within
+The uncached run reads **zero** cached tokens across all 24
+calls. Its input token total (299,537) is within
 0.2% of the
-cached run's (448,929) — the nonce adds a few tokens per call, so
+cached run's (298,929) — the nonce adds a few tokens per call, so
 the two runs are not token-identical, and that difference is in the numbers
 below rather than hidden.
 
@@ -48,50 +48,50 @@ below rather than hidden.
 | | Uncached | Cached |
 | --- | --- | --- |
 | Documents | 12 | 12 |
-| Model calls | 36 | 36 |
-| Input tokens | 449,839 | 448,929 |
-| — read from cache | 0 | 415,055 |
-| — written to cache | 445,303 | 29,338 |
-| Output tokens | 2,215 | 2,216 |
-| **Total cost** | **$0.1018** | **$0.0123** |
-| **Cost per document** | **$0.008480** | **$0.001026** |
+| Model calls | 24 | 24 |
+| Input tokens | 299,537 | 298,929 |
+| — read from cache | 0 | 292,311 |
+| — written to cache | 296,513 | 3,594 |
+| Output tokens | 1,283 | 1,285 |
+| **Total cost** | **$0.0677** | **$0.004675** |
+| **Cost per document** | **$0.005638** | **$0.000390** |
 
-**Saving: $0.0894 on 12 documents — 87.9%.**
-Caching makes a document **8.3× cheaper**.
+**Saving: $0.0630 on 12 documents — 93.1%.**
+Caching makes a document **14.5× cheaper**.
 
 ### Per document — uncached
 
 | Document | Calls | Input | Cache read | Cache write | Output | Cost |
 | --- | --- | --- | --- | --- | --- | --- |
-| `p01_bluehen_quote.html` | 3 | 37,504 | 0 | 37,126 | 175 | $0.008479 |
-| `p02_elmcity_quote.html` | 3 | 37,501 | 0 | 37,123 | 183 | $0.008482 |
-| `p03_ivyprint_catalog.html` | 3 | 37,523 | 0 | 37,145 | 187 | $0.008489 |
-| `p04_harborstitch_quote.html` | 3 | 37,494 | 0 | 37,116 | 184 | $0.008481 |
-| `p05_maplemills_quote.pdf` | 3 | 37,427 | 0 | 37,049 | 190 | $0.008469 |
-| `p06_qtextile_quote.pdf` | 3 | 37,548 | 0 | 37,170 | 193 | $0.008497 |
-| `p07_longwharf_quote.pdf` | 3 | 37,467 | 0 | 37,089 | 187 | $0.008477 |
-| `p08_chapelst_email.eml` | 3 | 37,487 | 0 | 37,109 | 181 | $0.008477 |
-| `p09_westville_email.eml` | 3 | 37,475 | 0 | 37,097 | 191 | $0.008480 |
-| `p10_eastrock_email.eml` | 3 | 37,522 | 0 | 37,144 | 181 | $0.008486 |
-| `p11_yorkst_quote.html` | 3 | 37,429 | 0 | 37,051 | 183 | $0.008467 |
-| `p12_bluehen_quote.pdf` | 3 | 37,462 | 0 | 37,084 | 180 | $0.008472 |
+| `p01_bluehen_quote.html` | 2 | 24,941 | 0 | 24,689 | 87 | $0.005624 |
+| `p02_elmcity_quote.html` | 2 | 24,983 | 0 | 24,731 | 118 | $0.005648 |
+| `p03_ivyprint_catalog.html` | 2 | 24,979 | 0 | 24,727 | 107 | $0.005642 |
+| `p04_harborstitch_quote.html` | 2 | 25,013 | 0 | 24,761 | 118 | $0.005656 |
+| `p05_maplemills_quote.pdf` | 2 | 24,908 | 0 | 24,656 | 90 | $0.005618 |
+| `p06_qtextile_quote.pdf` | 2 | 24,986 | 0 | 24,734 | 123 | $0.005652 |
+| `p07_longwharf_quote.pdf` | 2 | 24,927 | 0 | 24,675 | 125 | $0.005639 |
+| `p08_chapelst_email.eml` | 2 | 24,932 | 0 | 24,680 | 91 | $0.005624 |
+| `p09_westville_email.eml` | 2 | 25,079 | 0 | 24,827 | 132 | $0.005677 |
+| `p10_eastrock_email.eml` | 2 | 24,957 | 0 | 24,705 | 91 | $0.005629 |
+| `p11_yorkst_quote.html` | 2 | 24,907 | 0 | 24,655 | 90 | $0.005618 |
+| `p12_bluehen_quote.pdf` | 2 | 24,925 | 0 | 24,673 | 111 | $0.005632 |
 
 ### Per document — cached
 
 | Document | Calls | Input | Cache read | Cache write | Output | Cost |
 | --- | --- | --- | --- | --- | --- | --- |
-| `p01_bluehen_quote.html` | 3 | 37,423 | 36,612 | 433 | 175 | $0.000588 |
-| `p02_elmcity_quote.html` | 3 | 37,431 | 36,616 | 437 | 183 | $0.000594 |
-| `p03_ivyprint_catalog.html` | 3 | 37,445 | 36,613 | 454 | 186 | $0.000599 |
-| `p04_harborstitch_quote.html` | 3 | 37,415 | 36,608 | 429 | 184 | $0.000592 |
-| `p05_maplemills_quote.pdf` | 3 | 37,356 | 36,579 | 399 | 190 | $0.000588 |
-| `p06_qtextile_quote.pdf` | 3 | 37,471 | 36,623 | 470 | 191 | $0.000605 |
-| `p07_longwharf_quote.pdf` | 3 | 37,396 | 36,598 | 420 | 190 | $0.000594 |
-| `p08_chapelst_email.eml` | 3 | 37,408 | 36,606 | 424 | 181 | $0.000590 |
-| `p09_westville_email.eml` | 3 | 37,396 | 24,502 | 12,516 | 192 | $0.003195 |
-| `p10_eastrock_email.eml` | 3 | 37,446 | 36,625 | 443 | 181 | $0.000594 |
-| `p11_yorkst_quote.html` | 3 | 37,352 | 24,478 | 12,496 | 183 | $0.003186 |
-| `p12_bluehen_quote.pdf` | 3 | 37,390 | 36,595 | 417 | 180 | $0.000587 |
+| `p01_bluehen_quote.html` | 2 | 24,890 | 24,358 | 280 | 87 | $0.000375 |
+| `p02_elmcity_quote.html` | 2 | 24,936 | 24,359 | 325 | 118 | $0.000401 |
+| `p03_ivyprint_catalog.html` | 2 | 24,930 | 24,359 | 319 | 135 | $0.000408 |
+| `p04_harborstitch_quote.html` | 2 | 24,963 | 24,361 | 350 | 109 | $0.000402 |
+| `p05_maplemills_quote.pdf` | 2 | 24,857 | 24,359 | 246 | 90 | $0.000369 |
+| `p06_qtextile_quote.pdf` | 2 | 24,940 | 24,359 | 329 | 118 | $0.000402 |
+| `p07_longwharf_quote.pdf` | 2 | 24,876 | 24,359 | 265 | 115 | $0.000386 |
+| `p08_chapelst_email.eml` | 2 | 24,884 | 24,360 | 272 | 91 | $0.000375 |
+| `p09_westville_email.eml` | 2 | 25,021 | 24,360 | 409 | 131 | $0.000426 |
+| `p10_eastrock_email.eml` | 2 | 24,903 | 24,360 | 291 | 91 | $0.000379 |
+| `p11_yorkst_quote.html` | 2 | 24,856 | 24,359 | 245 | 90 | $0.000369 |
+| `p12_bluehen_quote.pdf` | 2 | 24,873 | 24,358 | 263 | 110 | $0.000383 |
 
 ---
 
@@ -100,18 +100,18 @@ Caching makes a document **8.3× cheaper**.
 `handbook_estimate.md` priced **the handbook alone, on one call**:
 10,058 tokens, $0.001006 uncached.
 
-A real document costs **$0.008480** uncached — about
-**8× more**. The estimate was not
+A real document costs **$0.005638** uncached — about
+**6× more**. The estimate was not
 wrong; it measured something narrower than a run. Three things account for
 the gap:
 
 | Why | Effect |
 | --- | --- |
 | **A document takes 3 model requests, not 1.** Read the document, look up the vendor, look up the SKU — each round trip resends the whole prefix. | ×3 |
-| **The prefix is more than the handbook.** The handbook is 10,058 tokens; a full request is ~12,495. The rest is the instructions (1,455 tokens), the tool schemas, the document text and the growing conversation. | ×~1.24 |
+| **The prefix is more than the handbook.** The handbook is 10,058 tokens; a full request is ~12,480. The rest is the instructions (1,455 tokens), the tool schemas, the document text and the growing conversation. | ×~1.24 |
 | **Every uncached call pays the cache *write* rate**, not the input rate — see §5. | ×1.25 |
 
-4.65× predicted against 8.43× observed: the estimate reconciles.
+4.65× predicted against 5.61× observed: the estimate reconciles.
 
 The handbook token count itself held up exactly. Measured inside the live
 system prompt it came to 10,057 tokens against the 10,058 measured standalone —
@@ -126,12 +126,12 @@ needed.**
 
 | | Per document | Per day | **30 days** |
 | --- | --- | --- | --- |
-| Uncached | $0.008480 | $8.48 | **$254.39** |
-| Cached (as measured) | $0.001026 | $1.03 | **$30.78** |
-| Cached (clean, see §5) | $0.000593 | $0.5931 | **$17.79** |
+| Uncached | $0.005638 | $5.64 | **$169.15** |
+| Cached (as measured) | $0.000390 | $0.3896 | **$11.69** |
+| Cached (clean, see §5) | $0.000390 | $0.3896 | **$11.69** |
 
-**Caching saves $223.61 a month** at this
-volume, and $236.60 if the two
+**Caching saves $157.46 a month** at this
+volume, and $157.46 if the two
 cache misses in §5 are avoided.
 
 At 1,000/day the cache would also stay continuously warm, which the
@@ -144,13 +144,13 @@ main thing that would push the real figure toward the middle row.
 
 ### Running without cache costs *more* than if caching did not exist
 
-The uncached run cost **$0.1018**. Priced as pure input at the base
-rate — no caching machinery at all — the same tokens come to **$0.0461**.
+The uncached run cost **$0.0677**. Priced as pure input at the base
+rate — no caching machinery at all — the same tokens come to **$0.0306**.
 Turning the cache off made the run **121% more
 expensive than a world without caching.**
 
 Because the prefix never matched, the gateway treated all
-445,303 prefix tokens as a *new entry to store* on every
+296,513 prefix tokens as a *new entry to store* on every
 call, and a cache write costs **0.125** per 1M against
 **0.1** for plain input — a
 25% premium.
@@ -170,18 +170,18 @@ layout wrong, not a strawman.
 ### Two cached documents cost 5× the other ten
 
 `p09_westville_email.eml` and `p11_yorkst_quote.html` cost
-$0.003195 and
-$0.003186, against about
-$0.000593 for the rest. Their contents are unremarkable; the cause is
-timing. Both read 24,502 cached tokens instead
+$0.000426 and
+$0.000369, against about
+$0.000390 for the rest. Their contents are unremarkable; the cause is
+timing. Both read 24,360 cached tokens instead
 of ~36,600 — two of their three requests hit, one missed and re-wrote
-12,516 tokens at the write premium.
+409 tokens at the write premium.
 
 The run primes the cache with one document, then fans the rest out four at a
 time. These two started while an entry was still being written, so they missed
 and paid to write it again. **Cache economics are a property of scheduling,
 not just of prompt layout** — the same twelve documents cost
-73% more than they needed to because
+0% more than they needed to because
 of when two of them happened to start.
 
 ---

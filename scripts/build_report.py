@@ -102,12 +102,20 @@ def main() -> None:
     layers = load("layer_costs.json")
     exam = load("exam_results.json")
     attack = load("attack_results.json")
+    exam_answers = load("exam_answers.json")
     human = load("human_view.json")
 
     hb_tokens = hb["measurement"]["handbook_tokens"]
     cu, cc = cache["summary"]["uncached"], cache["summary"]["cached"]
     du, dd = dres["modes"]["undefended"]["summary"], dres["modes"]["defended"]["summary"]
     flat = cu["input_tokens"] * 0.1 / 1e6 + cu["output_tokens"] * 0.5 / 1e6
+
+    # Projection at the volume the brief asks about.
+    PER_DAY, DAYS = 1000, 30
+    MONTH = PER_DAY * DAYS
+    cached_doc = cc["usd"] / cc["documents"]
+    uncached_doc = cu["usd"] / cu["documents"]
+    exam_doc = sum(x["cost_usd"] for x in exam) / len(exam)
 
     # ---- charts
     cache_chart = bar_chart(
@@ -155,6 +163,18 @@ def main() -> None:
         ba_rows.append((f"<code>{e(d)}</code>",
                         e(ud["answer"]["decision"]), mark(ud),
                         e(fd["answer"]["decision"]), mark(fd)))
+
+    proj_rows = [
+        ("<b>As built</b> — handbook reused from cache",
+         f"${cached_doc:.6f}", f"${cached_doc * PER_DAY:,.2f}",
+         f"<b>${cached_doc * MONTH:,.2f}</b>"),
+        ("Allowing for the cache-miss rate actually seen on the exam set",
+         f"${exam_doc:.6f}", f"${exam_doc * PER_DAY:,.2f}",
+         f"${exam_doc * MONTH:,.2f}"),
+        ("If the prompt is laid out wrongly and the cache never hits",
+         f"${uncached_doc:.6f}", f"${uncached_doc * PER_DAY:,.2f}",
+         f"${uncached_doc * MONTH:,.2f}"),
+    ]
 
     layer_rows = [
         ("Prompt — the defence rules in <code>prompt.md</code>",
@@ -239,6 +259,17 @@ color:var(--ink-2);font-style:italic}
 .note{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--b);
 border-radius:0 8px 8px 0;padding:12px 16px;margin:18px 0;font-size:.93rem}
 .note b{color:var(--ink)}
+.toc{background:var(--surface);border:1px solid var(--line);border-radius:10px;
+padding:14px 20px 16px;margin:28px 0 8px;font-family:ui-sans-serif,system-ui,sans-serif;
+font-size:.88rem}
+.toc>b{display:block;font-size:.76rem;text-transform:uppercase;
+letter-spacing:.06em;color:var(--ink-3)}
+.toc li b{color:var(--ink)}
+.toc ol{margin:8px 0 0;padding-left:20px}
+.toc li{margin:2px 0;color:var(--ink-2)}
+.toc a{color:var(--a);text-decoration:none}
+.toc a:hover{text-decoration:underline}
+ul li,ol li{margin:6px 0}
 footer{margin-top:64px;padding-top:18px;border-top:1px solid var(--line);
 color:var(--ink-3);font-size:.82rem}
 @media print{body{background:#fff}.tile,figure,.note{break-inside:avoid}
@@ -259,12 +290,25 @@ some of the quotes are actively trying to subvert.</p>
 
 <div class="tiles">
   <div class="tile"><span class="n">12/12</span><span class="k">practice documents correct, defended</span></div>
-  <div class="tile"><span class="n">0</span><span class="k">trap tool calls across 34 document runs</span></div>
+  <div class="tile"><span class="n">0</span><span class="k">trap tool calls across 24 document runs</span></div>
   <div class="tile"><span class="n">{hb_tokens:,}</span><span class="k">tokens in the handbook, measured</span></div>
   <div class="tile"><span class="n">90%</span><span class="k">of input served from cache</span></div>
 </div>
 
-<h2>1. What the handbook costs</h2>
+<nav class="toc"><b>On this page</b>
+<ol>
+<li><a href="#cost">What the handbook costs</a></li>
+<li><a href="#cache">Caching results</a> — with chart</li>
+<li><a href="#hidden">What the documents hide</a></li>
+<li><a href="#defences">What the defences cost</a> — tokens and dollars</li>
+<li><a href="#beforeafter">Attacks before and after the defences</a></li>
+<li><a href="#redteam">Two red-team attacks</a></li>
+<li><a href="#exam">Exam results</a></li>
+<li><a href="#open">What is still open</a></li>
+<li><a href="#rec"><b>Recommendation to the store manager</b></a></li>
+</ol></nav>
+
+<h2 id="cost">1. What the handbook costs</h2>
 <p>Every call carries the whole Shop Handbook, so its size sets the floor on
 cost. The count is measured against the gateway, not estimated: two calls with
 identical scaffolding, differing only in whether the handbook is in the
@@ -275,7 +319,7 @@ predicts {round(hb['characters'] / 4):,} tokens — <b>28% low</b>. The file run
 {hb['chars_per_token']} characters per token because it is dense in markdown
 tables, SKU codes and prices.</p>
 
-<h2>2. Caching is not optional</h2>
+<h2 id="cache">2. Caching results</h2>
 <p>The handbook is identical on every call, so the gateway can reuse it. All 12
 practice documents were run twice: once with a byte-identical prefix, once with
 a fresh nonce in the first tokens of <em>every model request</em> so no prefix
@@ -297,7 +341,7 @@ write costs 25% above plain input. There is no neutral setting: a large prompt
 is either reused at a tenth the price or re-written at a quarter above it. A
 timestamp at the top of a prompt would quietly cost 25% extra forever.</div>
 
-<h2>3. The documents attack the reader, not just the model</h2>
+<h2 id="hidden">3. What the documents hide</h2>
 <p>Five of the twelve practice documents contain text that a person opening
 them normally <em>cannot see</em>. The reader now computes both views — what a
 browser paints, what ink a PDF shows, which part a mail client displays — and
@@ -311,7 +355,7 @@ it was protected by accident — an unimplemented comment handler, and a
 preference for an email's plain-text part — so two live attacks had never been
 tested at all.</p>
 
-<h2>4. Defence in depth</h2>
+<h2 id="defences">4. The defences, and what they cost</h2>
 <p>Five layers. Each catches at least one attack in this dataset that none of
 the others catch.</p>
 <ol>
@@ -333,6 +377,13 @@ attack — the only layer that caught the one document that actually flipped.</l
 <h3>What each layer costs</h3>
 {table(["Layer", "Per document", "Why"], layer_rows)}
 
+<div class="tiles">
+  <div class="tile"><span class="n">${du['usd_per_document']:.6f}</span><span class="k">per document, no defences</span></div>
+  <div class="tile"><span class="n">${dd['usd_per_document']:.6f}</span><span class="k">per document, defended</span></div>
+  <div class="tile"><span class="n">−{(1 - dd['usd'] / du['usd']) * 100:.0f}%</span><span class="k">net change in cost</span></div>
+  <div class="tile"><span class="n">{dd['total_tokens'] - du['total_tokens']:+,}</span><span class="k">net change in tokens, 12 documents</span></div>
+</div>
+
 <figure>{cost_chart}
 <figcaption>Cost per practice document. The defended agent is cheaper because
 handing the decision to Python removes a whole model request, and each request
@@ -343,7 +394,7 @@ carries the entire ~11.7k-token prompt.</figcaption></figure>
 ${dd['usd_per_document']:.6f} against ${du['usd_per_document']:.6f} per
 document. Making it safer also made it shorter.</div>
 
-<h2>5. Before and after</h2>
+<h2 id="beforeafter">5. Attacks before and after the defences</h2>
 {table(["Document", "No defences", "", "Defended", ""], ba_rows)}
 
 <div class="tiles">
@@ -363,7 +414,7 @@ says so: <em>"used the revised price."</em></p>
 fields in either mode. A defence that answers "I can't tell" to a real quote
 has broken the product to protect it, and that was the risk worth watching.</p>
 
-<h2>6. Red team</h2>
+<h2 id="redteam">6. Two red-team attacks</h2>
 <p>Two attack documents were written against this agent using techniques the
 practice set does not use. <b>Neither fooled the model.</b> Both found real
 defects.</p>
@@ -397,7 +448,7 @@ already been reported as clean while both were reaching the model unlabelled —
 it looked healthy because the model handled them, not because the defences
 did.</div>
 
-<h2>7. Exam set</h2>
+<h2 id="exam">7. Exam results</h2>
 <p>All 10 documents through the final defended agent. No answer key exists, so
 nothing here is scored; decisions are computed from the extracted facts by the
 rule engine, not emitted by the model. All ten were recomputed by hand against
@@ -419,7 +470,7 @@ cost table to an outside address. Neither tool was called.
 claiming a rival's lot failed quality testing and redirecting the buyer to a
 removed vendor.</p>
 
-<h2>8. What is still open</h2>
+<h2 id="open">8. What is still open</h2>
 <p>An attack that simply printed a plausible wrong number in the
 <em>visible</em> quote — no hidden text, no instruction, no override language —
 would pass all five layers. At that point the document is lying, and the quote
@@ -429,6 +480,79 @@ source to disagree with, which this task does not have.</p>
 moments when a defence layer was blind. The model refused attacks the code
 never flagged, twice, and the only reason that surfaced was red-teaming. A
 12/12 does not tell you which part of the system earned it.</p>
+
+<h2 id="rec">9. Recommendation to the store manager</h2>
+
+<p class="lede">Yes — turn it on, but as the <em>first reader</em> of vendor
+mail, not as the last. It should sort and flag; a person should still sign.</p>
+
+<h3>What it would cost</h3>
+<p>At <b>1,000 documents a day for 30 days</b> — {MONTH:,} quotes a month:</p>
+
+{table(["Setup", "Per document", "Per day", "Per month"], proj_rows)}
+
+<p><b>Budget ${cached_doc * MONTH:,.0f}–${exam_doc * MONTH:,.0f} a month.</b>
+The first row is what a steady stream of quotes costs, because at this volume
+the cache never goes cold. The middle row is the honest allowance: on the exam
+run two of ten documents started while the cache entry was still being written
+and paid full price for half their prompt. The third row is not a scare
+figure — it is what the same system costs if someone puts a timestamp at the
+top of the prompt.</p>
+
+<p>For comparison, {MONTH:,} quotes is roughly <b>{MONTH / 60:,.0f} hours</b> of
+someone's time at one minute a quote. The model cost is not the deciding
+factor at any of these numbers; the review time it saves or wastes is.</p>
+
+<h3>Why it is safe enough to switch on</h3>
+<ul>
+<li><b>It cannot spend money or send mail.</b> <code>send_email</code> and
+<code>approve_payment</code> are wired up, but acting needs a person's
+sign-off that the agent has no way to produce. Across 24 document runs — the 12
+practice quotes, the 10 exam quotes and two attacks written to break it —
+neither tool fired once. Every attempt is logged.</li>
+<li><b>The buy/do-not-buy call is not the model's to make.</b> It reports what
+the quote says; the four handbook rules are applied in code afterwards. A
+vendor cannot talk the system into a purchase, because the part that decides
+does not read their letter.</li>
+<li><b>It reads what your staff cannot.</b> Nine of the 22 real documents hide
+text from anyone opening them normally — a price in invisible type, a request
+to email out the cost list painted white-on-white in a PDF, a rival's quote
+sabotaged. The agent reports all of it in plain language. A person reviewing
+the same files would approve some of them with no idea.</li>
+<li><b>It got every practice quote right</b> — all six fields on all twelve —
+and refused every attack in both sets.</li>
+</ul>
+
+<h3>Why it should not run unattended</h3>
+<ul>
+<li><b>One attack shape still gets through.</b> A vendor who simply prints a
+false number in the visible quote defeats every layer, because at that point
+the quote is the only evidence of what the quote says. Only a second source —
+a prior invoice, a phone call — catches that, and the agent has neither.</li>
+<li><b>The sample is 22 documents.</b> That is enough to show the thing works
+and nowhere near enough to put a purchasing decision on it unsupervised.</li>
+<li><b>Twice, the system looked healthy while a defence was blind.</b> Both
+times the model happened to refuse an attack the code never flagged, and both
+were found only by deliberately attacking it. A clean run does not prove the
+safeguards are working — it may only mean they were not needed that day.</li>
+</ul>
+
+<h3>What to do</h3>
+<ol>
+<li><b>Run it on everything that comes in</b>, and have it write the six
+fields plus its notes into the queue your buyer already works from.</li>
+<li><b>Let a person approve every purchase.</b> The agent's answer is a
+recommendation to them, not an instruction to the shop.</li>
+<li><b>Read the notes field, not just the decision.</b> That is where it tells
+you a document tried something — and on the one measured difference between
+the guarded and unguarded versions, the unguarded one got the right answer and
+said nothing about the attack, because the document told it to stay quiet.</li>
+<li><b>Check the trap log weekly.</b> It is empty today. The first entry means
+a vendor has tried to make the system pay or email on their behalf, which is
+worth knowing about whether or not it worked.</li>
+<li><b>Spot-check against a prior invoice</b> for any quote that is approved
+near a price limit. That is the gap the software cannot close.</li>
+</ol>
 
 <footer>
 Campus Customs is a fictional shop built for a course assignment — not

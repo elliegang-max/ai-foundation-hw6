@@ -426,3 +426,29 @@ library. Copied the file alone into an empty directory and confirmed it is
 complete there. Opened it in a browser and read it at both light and dark
 settings to check for label collisions and overflow — the exam table's SKU
 column was wrapping across three lines and was fixed.
+
+### Prompt 22 — 2026-10-19
+
+> The page must show the five things below.
+>
+> * Your caching results, with a chart
+> * Attacks before and after your defenses
+> * What your defenses cost in tokens and dollars
+> * Your exam results and your two red team attacks
+> * A short recommendation to the store manager: should Campus Customs turn
+>   this agent on for real vendor mail, and what would it cost per month at
+>   1,000 documents a day?
+
+**What Claude did.** Four of the five were already there; the recommendation
+was missing. Re-ran the cache experiment first, because the figures on the
+page came from the older three-request agent and would have understated the
+saving — the current defended agent is 93.1% cheaper cached, $0.000390 a
+document. Added section 9: a yes, with the monthly cost at 1,000 a day given
+as a range ($11.69 if the cache stays warm, $27.25 allowing for the miss rate
+actually seen on the exam run, $169.15 if the prompt is laid out wrongly), the
+four reasons it is safe enough to switch on, the three reasons it should not
+run unattended, and five concrete steps. Added a contents list naming all five
+required items, and put dollars beside tokens in the defence-cost section.
+Rendered and read it again: the projection table was printing its f-string
+placeholders literally, the contents list was uppercasing its last entry and
+numbering one short of the body, and two run-counts disagreed. All fixed.

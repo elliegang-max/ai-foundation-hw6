@@ -52,9 +52,14 @@ def main() -> None:
     # all, every input token at the base rate.
     flat = u["input_tokens"] * rates["input_per_1m"] / 1e6 + u["output_tokens"] * rates["output_per_1m"] / 1e6
 
-    # A clean cached run: the two documents that missed are a fan-out artifact.
-    clean = [v["usd"] for v in pc.values() if v["rd"] > 30000]
-    clean_doc = sum(clean) / len(clean)
+    # A clean cached run. Documents that missed are a fan-out artifact, not a
+    # property of the document, so "clean" is defined relative to the best
+    # cache read in the run rather than an absolute token count — the latter
+    # silently stops matching the moment the agent's request count changes.
+    best_read = max(v["rd"] for v in pc.values()) or 1
+    clean = [v["usd"] for v in pc.values() if v["rd"] >= 0.8 * best_read]
+    clean_doc = sum(clean) / len(clean) if clean else sum(
+        v["usd"] for v in pc.values()) / len(pc)
 
     total_docs = DOCS_PER_DAY * DAYS
 
