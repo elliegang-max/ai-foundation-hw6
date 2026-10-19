@@ -83,6 +83,7 @@ class Meter:
     calls: int = 0
     uncached_input: int = 0
     cached_input: int = 0
+    cache_written: int = 0
     output: int = 0
     _lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
 
@@ -96,6 +97,33 @@ class Meter:
             self.calls += 1
             self.uncached_input += uncached
             self.cached_input += cached
+            self.output += out
+
+    def record_run_usage(self, usage: Any) -> None:
+        """Add a PydanticAI `RunUsage` (what `AgentRunResult.usage()` returns).
+
+        PydanticAI reports `input_tokens` as the *total* prompt, with the
+        cached portion also broken out in `cache_read_tokens` — same
+        convention as the raw API — so the cached part is subtracted out
+        rather than billed twice at the full rate. `cache_write_tokens` is
+        counted at the write rate where the gateway reports it.
+        """
+        if usage is None:
+            return
+        total_in = int(getattr(usage, "input_tokens", 0) or 0)
+        cached = int(getattr(usage, "cache_read_tokens", 0) or 0)
+        written = int(getattr(usage, "cache_write_tokens", 0) or 0)
+        out = int(getattr(usage, "output_tokens", 0) or 0)
+        requests = int(getattr(usage, "requests", 1) or 1)
+
+        # Guard against a provider that reports them as disjoint instead.
+        uncached = max(total_in - cached, 0) if cached <= total_in else total_in
+
+        with self._lock:
+            self.calls += requests
+            self.uncached_input += uncached
+            self.cached_input += cached
+            self.cache_written += written
             self.output += out
 
     @property
@@ -112,6 +140,7 @@ class Meter:
         return (
             self.uncached_input * p.input_per_1m
             + self.cached_input * p.cached_input_per_1m
+            + self.cache_written * p.cache_write_per_1m
             + self.output * p.output_per_1m
         ) / 1_000_000
 
@@ -122,6 +151,7 @@ class Meter:
             "calls": self.calls,
             "input_tokens": self.input_tokens,
             "cached_input_tokens": self.cached_input,
+            "cache_write_tokens": self.cache_written,
             "output_tokens": self.output,
             "total_tokens": self.total_tokens,
             "usd": round(self.dollars, 6),

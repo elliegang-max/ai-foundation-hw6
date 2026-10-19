@@ -113,3 +113,40 @@ that looks carried over from an earlier assignment. Measured the handbook's
 token count against the gateway rather than estimating it, and wrote
 `output/handbook_estimate.md` with the count, the method, and the four cost
 cases.
+
+---
+
+## Unnumbered — the vendor desk agent
+
+*(Awaiting its problem number and title from the handout.)*
+
+### Prompt 6 — 2026-10-19
+
+A pasted specification:
+
+> Build the vendor desk agent with PydanticAI using `gpt-6-luna`. The agent is
+> these four files:
+>
+> * `prompts/prompt.md`: your instructions for the agent (the agent also sends
+>   the handbook to the model on every call)
+> * `agent.py`: the entry point
+> * `tools.py`: the tools
+> * `models.py`: the structured types
+>
+> Give the agent the path to one vendor document. It reads the document with a
+> tool (HTML, PDF, and `.eml` email files all have to work) and returns:
+> vendor, SKU, unit price, lead time in days, minimum order, a decision
+> (`recommend` or `do_not_recommend`) following the handbook rules, and a
+> one-sentence reason.
+
+followed by:
+
+> Goooo
+
+**What Claude did.** Built the four files. PydanticAI is wrapped around
+`config.client()` rather than building its own client, so `gpt-6-luna` still
+enters through `config.model()` and nowhere else. The reader handles HTML, PDF
+and `.eml`, the last through Python's `email` package. Document text is handed
+to the model clearly delimited as untrusted data: the document supplies the
+values, the handbook supplies the rules. Self-scored on the 12 practice
+documents against `data/practice_key.json`.

@@ -5,8 +5,13 @@ vendor quotes that arrive as HTML, PDF and email, pulls out the six facts that
 matter, and decides `recommend` / `do_not_recommend` against the shop's
 purchasing rules.
 
-Dataset is in; **no pipeline is built yet**. See [RULES.md](RULES.md) for the
-constraints it must satisfy.
+```bash
+python agent.py data/practice_docs/p01_bluehen_quote.html
+```
+
+**Scores 12/12 on the practice set**, every field, at $0.0147 for the run.
+See [RULES.md](RULES.md) for the constraints and
+[output/harness.md](output/harness.md) for how it is built.
 
 > Campus Customs is a fictional shop built for a course assignment. It is not
 > affiliated with, endorsed by, or a partner of Yale University.
@@ -68,6 +73,10 @@ full constraint and the few details still to confirm against the handout.
 | `data/`          | The dataset, committed whole (128K) so a grader can clone and run. |
 | `output/`        | Everything the code produces: run artefacts, `harness.md`, figures. |
 | `scripts/`       | One-off runners and helpers.                              |
+| `agent.py`       | Entry point — one document in, an assessment out.         |
+| `tools.py`       | Reading documents (HTML/PDF/email) and the handbook.      |
+| `models.py`      | The structured types.                                     |
+| `prompts/`       | `prompt.md`, the agent's instructions.                    |
 | `config.py`      | The model constant, the credential chain, the one client. |
 | `cost.py`        | Token and dollar accounting for every call.               |
 | `RULES.md`       | Constraints the assignment imposes.                       |
@@ -106,3 +115,38 @@ print(METER.report())
 Cached input is a tenth the price of fresh input, so keeping a stable prefix
 (the handbook, the instructions) byte-identical across calls is the single
 biggest lever on the bill.
+
+---
+
+## The agent
+
+One vendor document in, six fields plus a decision out:
+
+```
+  Document    p01_bluehen_quote.html
+  Vendor      Blue Hen Apparel
+  SKU         CC-HD-006
+  Unit price  $21.80
+  Lead time   14 days
+  Min order   240 units
+
+  DECISION    RECOMMEND
+  Reason      The approved-vendor, price, lead-time, and minimum-order checks all pass.
+```
+
+HTML, PDF and `.eml` all work. `--json` prints the structured output instead.
+
+**Self-score on the practice set:**
+
+```bash
+python scripts/score_practice.py     # writes output/practice_run.json
+```
+
+### The design in one line
+
+**The document supplies values; the handbook supplies rules.** `extract_document`
+reads the outside file; `lookup_vendor` and `lookup_sku` answer the handbook
+questions and never look at the document. So no document can approve its own
+vendor or move a price ceiling — the functions that could do that read a
+different file. Two practice documents try exactly that; see
+[output/harness.md](output/harness.md) §2.5.

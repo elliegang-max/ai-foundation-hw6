@@ -1,9 +1,13 @@
 # Python dependencies — install with:
 #   python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
-#
-# Starting set only. Add what this assignment actually needs once the spec
-# is in hand, rather than carrying over everything hw5 used.
 
+# The agent. The [openai] extra gives the OpenAI-compatible model class that
+# wraps the pinned client from config.py.
+pydantic-ai-slim[openai]
 openai
 pydantic
 python-dotenv
+
+# Reading vendor documents. HTML and .eml are handled with the standard
+# library (html.parser, email); PDFs need this.
+pypdf
