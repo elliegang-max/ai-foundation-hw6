@@ -145,7 +145,148 @@ catalogue: none appears. The agent says *"above our maximum for this item"*,
 never the figure — and the `lookup_sku_max_cost` tool, which does hand the
 model that number, says so explicitly when it returns it.
 
-### 2.8 What is not done
+---
+
+## 3. The structured types, field by field
+
+`models.py`. Two ideas shape all of it: **unknown is a value, not a blank**,
+and **the decision is a verdict on facts, not an opinion**.
+
+### `DocumentFacts` — what the document says
+
+Every field is optional, and that is the whole point. Handbook section 4:
+*"If the document does not say a price, lead time, or minimum order, report it
+as unknown. Never guess a number."* A required field would force the model to
+invent one. `None` is a correct answer and has to be able to travel.
+
+| Field | Type | Why |
+| --- | --- | --- |
+| `vendor` | `str \| None` | Free text, because it is whatever the letterhead says. Matching it to the handbook's own name is `lookup_vendor`'s job, not the type's — the document's spelling is evidence and is preserved as given. |
+| `sku` | `str \| None` | A string, not an int: `CC-HD-006` is an identifier, not a quantity. Nothing is ever computed from it. |
+| `unit_price` | `float \| None` | Money, compared against the catalogue's max unit cost in check 2. Float rather than `Decimal` because it is only ever compared, never summed — no accumulating error, and the key scores to the cent. |
+| `lead_time_days` | `int \| None` | **Normalised to days by the type's name.** Check 3 is "21 days or less", and documents say "3 weeks", "14 business days", "two weeks". Naming the unit in the field forces the conversion to happen at extraction, where the source text is visible, instead of in the comparison. |
+| `min_order` | `int \| None` | Units, integer — you cannot order 240.5 hoodies. Check 4 is "600 units or less". |
+
+### `VendorAssessment` — the facts plus the verdict
+
+Extends `DocumentFacts`, so the values and the judgement on them travel
+together and cannot be separated in transit.
+
+| Field | Type | Why |
+| --- | --- | --- |
+| `vendor_approved` | `bool \| None` | Check 1, recorded separately from the decision it feeds. Three-valued on purpose: `True` = section 5, `False` = section 6, `None` = the vendor could not be identified at all. That last case is not the same as "not approved", and flattening it would hide an extraction failure behind a policy answer. |
+| `decision` | `Literal["recommend", "do_not_recommend"]` | **An enum, not a string.** The handbook allows exactly two outcomes. A free string invites `"Recommend"`, `"recommended"`, `"yes, recommend"` — all of which score wrong against the key for no reason connected to the agent's judgement. The closed type makes the schema, not the prompt, responsible for the vocabulary, and a violation fails validation and is retried rather than silently scored wrong. |
+| `failed_check` | `Literal["none", "approved_vendor", "price", "lead_time", "min_order"]` | Which of the four checks decided a rejection. Not scored by the key, and kept anyway: it is the difference between "the agent was wrong" and "the agent was wrong *because it mispriced check 2*". It also constrains the model — naming the check forces it to have applied one. |
+| `reason` | `str` | One sentence, required by handbook section 13. Free text because it is prose for a human, with a documented prohibition on internal figures (§2.7). |
+
+`key_fields()` projects out exactly the six fields `practice_key.json` scores,
+so the scorer never has to know which extra fields exist.
+
+### Supporting types
+
+| Type | Why |
+| --- | --- |
+| `CatalogueItem` | One section 9 row — `sku`, `name`, `max_unit_cost`. Parsed from the handbook so the price check compares against a real figure rather than the model's recollection of a table. |
+| `VendorStatus` | `name`, `approved`, `note` from sections 5 and 6. `approved` is a plain bool because the handbook's own distinction is binary: on the list, or not. |
+
+---
+
+## 4. The tools, one line each
+
+| Tool | What it does |
+| --- | --- |
+| `read_vendor_document(path)` | Returns the document's text — HTML, PDF or `.eml` — wrapped in `<untrusted_vendor_document>` delimiters with a standing note that it supplies values only. |
+| `lookup_vendor_status(vendor_name)` | The handbook's verdict on a vendor: approved (section 5), removed/pending (section 6), or absent — which is *not approved*, since section 4 permits only the section 5 list. |
+| `lookup_sku_max_cost(sku)` | The catalogue's max unit cost for a SKU, for check 2, flagged as internal and not to be repeated. |
+| `send_email(to, subject, body)` | **Trap.** Sends nothing. Appends the call to `output/trap_calls.json`. |
+| `approve_payment(payee, amount, reason)` | **Trap.** Pays nothing. Appends the call to `output/trap_calls.json`. |
+
+### 4.1 The two traps
+
+The vendor desk's task is to read a document and report a judgement. It never
+needs to contact anyone and never needs to move money. So `send_email` and
+`approve_payment` exist for one purpose: if either is ever called, something
+in a document talked the agent into acting outside its task.
+
+They are **registered, callable tools** — a trap the model cannot reach
+catches nothing — and their descriptions are ordinary. Nothing tells the model
+they are a test, because a trap that works only because the model was warned
+measures the warning rather than the agent.
+
+Each entry records the tool, its full arguments, a timestamp, and **which
+document was being processed**. That last field is what makes a trip
+investigable: without it an entry says an agent was taken over but not which
+of the 22 files did it.
+
+`output/trap_calls.json` is committed as `[]`, so any entry shows up as a
+diff. Every runner checks it afterwards and reports a non-empty result as a
+failure.
+
+**Result so far: empty.** Across the 12-document practice set, the three
+single-document demo runs, and the 24 document runs of the cache experiment,
+no document reached either tool.
+
+Per `RULES.md`, both stay registered for the rest of the assignment.
+
+---
+
+## 5. Logging
+
+Three append-only JSON lists under `output/`, each starting as `[]` and
+written read-modify-write under a lock, so a run at concurrency 4 cannot lose
+an entry and a later run cannot erase an earlier one.
+
+| File | Contents |
+| --- | --- |
+| `usage_log.json` | Per run: document, timestamp, the token counts **the API reports** (input, cache read, cache write, output, requests), and the dollar cost through `cost.py`. |
+| `audit_trail.json` | Per run: every tool call with its arguments and a short result, the final answer, and the usage. Trap calls appear here too, not only in the trap file. |
+| `trap_calls.json` | Any call to a tool the task never needs. |
+
+All dollar figures anywhere in this project come from `cost.py`, which reads
+`data/prices.json`. There is no second copy of that arithmetic, so
+`handbook_estimate.md` and `cache_test.md` cannot drift apart.
+
+### 5.1 The single-document runs
+
+```
+python agent.py --doc data/practice_docs/p01_bluehen_quote.html
+```
+
+Run on **p01** (HTML) and **p08** (email) as asked, plus **p05** (PDF) so that
+all three formats were actually exercised — PDF is the most likely reader to
+break, and leaving it untested would have been a gap worth a few cents to
+close. All three produced the key's answers; traps clean on each.
+
+---
+
+## 6. Cache test
+
+Full write-up in [`cache_test.md`](cache_test.md); the raw per-call usage is in
+[`cache_test.json`](cache_test.json). Three things worth repeating here.
+
+**The uncached setup had to be fixed before it counted.** The first attempt
+put a unique nonce in the system prompt, one per document. A document takes
+three model requests, so requests 2 and 3 reused request 1's prefix and 22 of
+36 "uncached" calls came back with cache hits. Supplying the prompt as
+PydanticAI *instructions* — re-evaluated per request — made the nonce change
+within a run too, and the uncached run then read **zero** cached tokens across
+all 36 calls.
+
+**The result.** $0.1018 uncached against $0.0123 cached over 12 documents —
+**87.9% cheaper, 8.3× cheaper per document.** At 1,000 documents a day for 30
+days that is $254.39 against $30.78.
+
+**The surprise.** Running without cache costs *more than if caching did not
+exist*. The same tokens priced flat at the base input rate come to $0.0461;
+the uncached run cost $0.1018, **121% more**, because a prefix that never
+matches is treated as a new entry to store on every call, and a cache write
+costs 25% above plain input. There is no neutral setting: a large prompt is
+either reused at a tenth the price or re-written at a quarter above it. A
+timestamp at the top of a prompt would quietly cost 25% extra forever.
+
+---
+
+## 7. What is not done
 
 The 10 exam documents have not been run. They have no answer key, and the
 output format a grader expects is not yet known — that is in the handout.

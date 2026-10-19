@@ -23,6 +23,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from agent import assess  # noqa: E402
 from config import PROJECT_ROOT  # noqa: E402
+import runlog  # noqa: E402
 from cost import METER  # noqa: E402
 
 DOCS = PROJECT_ROOT / "data" / "practice_docs"
@@ -49,7 +50,7 @@ def equal(field: str, got: object, want: object) -> bool:
 async def one(entry: dict, sem: asyncio.Semaphore | None = None) -> dict:
     async def run() -> dict:
         try:
-            out = await assess(DOCS / entry["file"])
+            out, _usage = await assess(DOCS / entry["file"])
             got = out.key_fields()
             mismatches = {
                 f: {"got": got[f], "want": entry[f]}
@@ -125,7 +126,8 @@ async def main() -> None:
     print(f"  decisions       {summary['decision_accuracy']}")
     print(f"  fields          {summary['field_accuracy']}  ({summary['field_accuracy_pct']}%)")
     print(f"  per field       {per_field}")
-    print(f"  {METER.report()}\n")
+    print(f"  {METER.report()}")
+    runlog.assert_traps_clean("practice set, 12 documents")
 
 
 if __name__ == "__main__":

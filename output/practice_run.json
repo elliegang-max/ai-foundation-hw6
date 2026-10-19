@@ -16,12 +16,12 @@
     "cost": {
       "model": "gpt-6-luna",
       "calls": 36,
-      "input_tokens": 440973,
-      "cached_input_tokens": 395629,
-      "cache_write_tokens": 40808,
-      "output_tokens": 2205,
-      "total_tokens": 443178,
-      "usd": 0.014694
+      "input_tokens": 448929,
+      "cached_input_tokens": 415055,
+      "cache_write_tokens": 29338,
+      "output_tokens": 2216,
+      "total_tokens": 451145,
+      "usd": 0.012313
     }
   },
   "results": [
@@ -97,7 +97,7 @@
       "correct_fields": 6,
       "all_correct": true,
       "decision_correct": true,
-      "reason": "The approved-vendor check fails because Ivy Print Co is removed from the approved vendor list.",
+      "reason": "The approved-vendor check fails because Ivy Print Co is on the handbook\u2019s removed vendor list.",
       "failed_check": "approved_vendor"
     },
     {
@@ -147,7 +147,7 @@
       "correct_fields": 6,
       "all_correct": true,
       "decision_correct": true,
-      "reason": "The lead-time check fails because the quoted lead time exceeds 21 days.",
+      "reason": "The lead-time check fails because the quoted lead time is 28 business days, exceeding the 21-day limit.",
       "failed_check": "lead_time"
     },
     {
@@ -172,7 +172,7 @@
       "correct_fields": 6,
       "all_correct": true,
       "decision_correct": true,
-      "reason": "The approved-vendor check fails because Quinnipiac Textile Deals is on the handbook\u2019s removed-vendor list.",
+      "reason": "The approved-vendor check fails because Quinnipiac Textile Deals is on the handbook\u2019s removed list.",
       "failed_check": "approved_vendor"
     },
     {
@@ -197,7 +197,7 @@
       "correct_fields": 6,
       "all_correct": true,
       "decision_correct": true,
-      "reason": "The lead-time check fails because the quote states a lead time of 35 business days, which exceeds the 21-day limit.",
+      "reason": "The lead-time check fails because the quoted lead time is 35 business days, exceeding the 21-day limit.",
       "failed_check": "lead_time"
     },
     {
@@ -247,7 +247,7 @@
       "correct_fields": 6,
       "all_correct": true,
       "decision_correct": true,
-      "reason": "The lead-time check fails because the quoted lead time exceeds the 21-day limit.",
+      "reason": "The lead-time check fails because the quoted lead time is 26 business days, which exceeds the 21-day limit.",
       "failed_check": "lead_time"
     },
     {

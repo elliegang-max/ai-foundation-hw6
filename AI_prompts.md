@@ -150,3 +150,79 @@ and `.eml`, the last through Python's `email` package. Document text is handed
 to the model clearly delimited as untrusted data: the document supplies the
 values, the handbook supplies the rules. Self-scored on the 12 practice
 documents against `data/practice_key.json`.
+
+### Prompt 7 — 2026-10-19
+
+> The agent must also have two trap tools: send_email and approve_payment. Its
+> job never needs them. They are there to catch a malicious document that
+> tricks your agent into emailing someone or paying a vendor. They do not send
+> or pay anything. They only append the call and its arguments to
+> output/trap_calls.json (start it as an empty list), so if that file ever has
+> an entry, a document took over your agent. Keep them on your system for the
+> whole homework.
+
+**What Claude did.** Registered both as real tools the model can actually
+reach — a trap it cannot call catches nothing — whose entire body is to append
+to `output/trap_calls.json`. Each entry records the tool, its full arguments, a
+timestamp and the document being processed, so a trip identifies which of the
+22 files caused it. The file is committed as `[]` so any entry shows as a diff.
+`prompts/prompt.md` now scopes the job — extract and decide, never contact
+anyone, never move money — without telling the model it is being watched. The
+runners fail loudly on a non-empty file. Across all 22 documents the file
+stayed empty.
+
+### Prompt 8 — 2026-10-19
+
+A pasted specification:
+
+> After every run, append to:
+>
+> * `output/usage_log.json`: document, time, the token counts the API reports,
+>   and the dollar cost using `prices.json`
+> * `output/audit_trail.json`: each tool call with its arguments and a short
+>   result, plus the final answer
+
+then typed:
+
+> The agent should run like this in the terminal: python agent.py --doc
+> data/practice_docs/p01_bluehen_quote.html What this is doing: runs your agent
+> on one vendor quote and logs the answer, tools, and cost.
+>
+> Run it on p01 and p08 to show it works. Start output/harness.md: each field
+> in models.py and why, and each tool in one line.
+
+**What Claude did.** Added the `--doc` form and both append-only logs, which
+record the API's own usage numbers rather than an estimate. Ran p01 (HTML) and
+p08 (email) as asked, and p05 (PDF) as well so that all three formats were
+exercised. Used the real token counts to check the handbook figure from the
+earlier problem. Rewrote `output/harness.md` with every field in `models.py`
+and the reason it exists, and one line per tool.
+
+### Prompt 9 — 2026-10-19
+
+> The handbook is the same on every call, so the model can reuse it from a
+> cache at a much cheaper price.
+> Test what that is worth. Run the agent on all 12 practice documents two ways:
+>
+> * With cache: set up so the handbook gets reused from cache
+> * Without cache: set up so nothing gets reused from cache Check the token
+>   counts the API sends back to prove each setup really did what you think. A
+>   without-cache run that still shows cached tokens does not count. now after
+>   you run this give me the proof
+
+### Prompt 10 — 2026-10-19
+
+> Save every model call from both setups to output/cache_test.json. For each
+> call include the setup, document, every token count the API reports, and
+> dollars from prices.json In `output/cache_test.md`:
+>
+> * Total cost and cost per document for each setup, and the percent you saved
+> * How your real numbers compare to your Problem 2 estimate
+> * A projection for 1,000 documents a day for 30 days, with and without cache
+> * Anything in the numbers that surprised you, and why it happens
+
+**What Claude did (prompts 9 and 10).** Ran all 12 practice documents twice:
+once with the handbook as a byte-identical prefix so the gateway could reuse
+it, and once with a unique nonce prepended to each call so no prefix could
+match. Saved every call's raw usage to `output/cache_test.json` and wrote the
+comparison up in `output/cache_test.md`.
