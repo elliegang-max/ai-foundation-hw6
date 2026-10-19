@@ -410,3 +410,19 @@ has still not arrived.
 assumed. That name was already taken by the earlier defended-vs-undefended
 comparison, so that file was renamed to `exam_mode_comparison.json` and its
 three references updated, rather than being overwritten.
+
+### Prompt 21 — 2026-10-19
+
+> Build output/hw6_report.html. It must be one file that opens by double-click
+> with no internet and no other files next to it.
+
+**What Claude did.** Built it with `scripts/build_report.py`, which reads every
+figure out of the run artefacts in `output/` rather than having them typed in,
+so the report cannot drift from what actually ran. Self-containment was
+checked rather than assumed: no `src`, `href`, `<link>`, `<script>`,
+`@import`, `url()` or webfont anywhere in the file; styles inline; a system
+font stack; and the two charts hand-built as inline SVG rather than a chart
+library. Copied the file alone into an empty directory and confirmed it is
+complete there. Opened it in a browser and read it at both light and dark
+settings to check for label collisions and overflow — the exam table's SKU
+column was wrapping across three lines and was fixed.
